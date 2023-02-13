@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.mapper.UserInfoMapper">
+
+    <select id="queryUserInfos" resultType="java.util.Map">
+        SELECT
+        u.userCode,
+        u.userName,
+        u.email,
+        u.telephoneNumber,
+        d1.dicValue AS roleName,
+        d2.dicValue AS onlineStatus,
+        d3.dicValue AS accountStatus,
+        DATE_FORMAT( u.insertTime, '%Y-%m-%d' ) AS insertTime
+        FROM
+        user_info u
+        LEFT JOIN dictionary_info d1 ON d1.dicTypeCode = 0
+        AND u.roleCode = d1.dicCode
+        LEFT JOIN dictionary_info d2 ON d2.dicTypeCode = 1
+        AND u.roleCode = d2.dicCode
+        LEFT JOIN dictionary_info d3 ON d3.dicTypeCode = 2
+        AND u.roleCode = d3.dicCode
+        WHERE
+        1 = 1
+        <if test="userCode!='' and userCode != null">
+            AND u.userCode LIKE concat('%',#{userCode},'%')
+        </if>
+        <if test="userName!='' and userName != null">
+            AND u.userName LIKE concat('%',#{userName},'%')
+        </if>
+        <if test="onlineStatusCode!='' and onlineStatusCode != null">
+            AND u.onlineStatusCode = #{onlineStatusCode}
+        </if>
+        <if test="accountStatusCode!='' and accountStatusCode != null">
+            AND u.accountStatusCode = #{accountStatusCode}
+        </if>
+        <if test="insertTime!='' and insertTime != null">
+            AND u.insertTime = #{insertTime}
+        </if>
+        ORDER BY u.insertTime DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.mapper.EquipmentInfoMapper">
+
+    <select id="queryEquipmentStock" resultType="java.util.Map">
+        SELECT
+        equipmentName,
+        COUNT( equipmentCode ) AS stockNum,
+        SUM( CASE WHEN equipmentStatusCode = 0 THEN 1 ELSE 0 END ) AS freeNum,
+        SUM( CASE WHEN equipmentStatusCode = 1 THEN 1 ELSE 0 END ) AS sendNum,
+        SUM( CASE WHEN equipmentStatusCode = 2 THEN 1 ELSE 0 END ) AS useNum,
+        SUM( CASE WHEN equipmentStatusCode = 3 THEN 1 ELSE 0 END ) AS scrapNum
+        FROM
+        equipment_info
+        WHERE
+        1 = 1
+        <if test="equipmentName!='' and equipmentName != null">
+            AND equipmentName LIKE concat('%',#{equipmentName},'%')
+        </if>
+        GROUP BY equipmentName
+    </select>
+
+    <select id="queryEquipmentInfos" resultType="java.util.Map">
+        SELECT
+        e.equipmentName,
+        e.equipmentType,
+        d.dicValue AS equipmentStatus,
+        u.userName,
+        DATE_FORMAT( e.insertTime, '%Y-%m-%d' ) AS insertTime
+        FROM
+        equipment_info e
+        LEFT JOIN user_info u ON e.userCode = u.userCode
+        LEFT JOIN dictionary_info d ON d.dicTypeCode = 3
+        AND e.equipmentStatusCode = d.dicCode
+        WHERE
+        1 = 1
+        <if test="equipmentName!='' and equipmentName != null">
+            AND e.equipmentName LIKE concat('%',#{equipmentName},'%')
+        </if>
+        <if test="equipmentType!='' and equipmentType != null">
+            AND e.equipmentType LIKE concat('%',#{equipmentType},'%')
+        </if>
+        <if test="equipmentStatusCode!='' and equipmentStatusCode != null">
+            AND e.equipmentStatusCode = #{equipmentStatusCode}
+        </if>
+        <if test="userName!='' and userName != null">
+            AND u.userName LIKE concat('%',#{userName},'%')
+        </if>
+        <if test="insertTime!='' and insertTime != null">
+            AND e.insertTime = #{insertTime}
+        </if>
+        ORDER BY e.insertTime DESC
+    </select>
+
+</mapper>
