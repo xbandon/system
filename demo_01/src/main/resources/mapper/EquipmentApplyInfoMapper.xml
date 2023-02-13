@@ -19,6 +19,7 @@
         <if test="equipmentName!='' and equipmentName != null">
             AND a.equipmentName LIKE concat('%',#{equipmentName},'%')
         </if>
+        ORDER BY a.applyTime
     </select>
 
     <select id="queryApprovedSucInfos" resultType="java.util.Map">
@@ -26,6 +27,7 @@
         a.equipmentName,
         a.equipmentType,
         u1.userName AS applyUser,
+        a.applyReason,
         DATE_FORMAT( a.applyTime, '%Y-%m-%d' ) AS applyTime,
         u2.userName AS approvalUser,
         DATE_FORMAT( a.approvalTime, '%Y-%m-%d' ) AS approvalTime,
@@ -54,12 +56,14 @@
         <if test="receiveStatusCode!='' and receiveStatusCode != null">
             AND a.receiveStatusCode = #{receiveStatusCode}
         </if>
+        ORDER BY a.approvalTime DESC, a.receiveTime DESC
     </select>
 
     <select id="queryApprovedErrInfos" resultType="java.util.Map">
         SELECT
         a.equipmentName,
         u1.userName AS applyUser,
+        a.applyReason,
         DATE_FORMAT( a.applyTime, '%Y-%m-%d' ) AS applyTime,
         u2.userName AS approvalUser,
         a.approvalLog,
@@ -79,6 +83,7 @@
         <if test="equipmentName!='' and equipmentName != null">
             AND a.equipmentName LIKE concat('%',#{equipmentName},'%')
         </if>
+        ORDER BY a.approvalTime DESC
     </select>
 
 </mapper>

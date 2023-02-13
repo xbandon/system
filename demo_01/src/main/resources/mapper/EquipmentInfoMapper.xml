@@ -49,7 +49,7 @@
         <if test="insertTime!='' and insertTime != null">
             AND e.insertTime = #{insertTime}
         </if>
-        ORDER BY e.insertTime DESC
+        ORDER BY e.updateTime DESC
     </select>
 
 </mapper>

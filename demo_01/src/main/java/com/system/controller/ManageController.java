@@ -151,7 +151,7 @@ public class ManageController {
 
     //endregion
 
-    //region ************************************************** 审批管理 **************************************************
+    //region ************************************************** 设备申请 **************************************************
 
     /**
      * 待审批记录查看
@@ -171,8 +171,7 @@ public class ManageController {
             }
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
-            IPage<Map<String, Object>> pendingInfo = equipmentApplyInfoMapper.queryPendingInfos(page, userName,
-                    equipmentName);
+            IPage<Map<String, Object>> pendingInfo = equipmentApplyInfoMapper.queryPendingInfos(page, userName, equipmentName);
             List<Map<String, Object>> list = pendingInfo.getRecords();
             resultMap.put("list", list);
             resultMap.put("success", true);
