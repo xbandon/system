@@ -20,6 +20,13 @@
         GROUP BY equipmentName
     </select>
 
+    <select id="queryEquipmentFreeNum" resultType="java.lang.Integer">
+        SELECT SUM(CASE WHEN equipmentStatusCode = 0 THEN 1 ELSE 0 END)
+        FROM equipment_info
+        WHERE equipmentName = #{equipmentName}
+        GROUP BY equipmentName
+    </select>
+
     <select id="queryEquipmentInfos" resultType="java.util.Map">
         SELECT
         e.equipmentName,
@@ -50,6 +57,14 @@
             AND e.insertTime = #{insertTime}
         </if>
         ORDER BY e.updateTime DESC
+    </select>
+
+    <select id="queryFreeEquipments" resultType="java.util.Map">
+        SELECT equipmentName,
+               equipmentType
+        FROM equipment_info
+        WHERE equipmentStatusCode = 0
+          AND equipmentName = #{equipmentName}
     </select>
 
 </mapper>

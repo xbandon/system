@@ -34,26 +34,26 @@ public class EquipmentChangeInfo implements Serializable {
     /**
      * 原设备名称
      */
-    @TableField("equipmentName")
-    private String equipmentName;
+    @TableField("srcEquipmentName")
+    private String srcEquipmentName;
 
     /**
      * 更换设备名称
      */
-    @TableField("equipmentChangeName")
-    private String equipmentChangeName;
+    @TableField("equipmentName")
+    private String equipmentName;
 
     /**
      * 原设备型号
      */
-    @TableField("equipmentType")
-    private String equipmentType;
+    @TableField("srcEquipmentType")
+    private String srcEquipmentType;
 
     /**
      * 更换设备型号
      */
-    @TableField("equipmentChangeType")
-    private String equipmentChangeType;
+    @TableField("equipmentType")
+    private String equipmentType;
 
     /**
      * 申请人编号

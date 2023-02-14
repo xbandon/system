@@ -4,6 +4,7 @@
 
     <select id="queryApprovingInfos" resultType="java.util.Map">
         SELECT
+        a.keyId,
         a.equipmentName,
         u.userName,
         a.applyReason,

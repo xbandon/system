@@ -2,9 +2,12 @@ package com.system.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.segments.MergeSegments;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.system.entity.EquipmentApplyInfo;
 import com.system.entity.EquipmentInfo;
 import com.system.entity.UserInfo;
 import com.system.mapper.EquipmentApplyInfoMapper;
@@ -25,8 +28,8 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/eq")
-public class ManageController {
+@RequestMapping("/mg")
+public class ManagerController {
     @Resource
     EquipmentInfoMapper equipmentInfoMapper;
 
@@ -136,7 +139,9 @@ public class ManageController {
                 equipmentInfo.setEquipmentName(equipmentName);
                 equipmentInfo.setEquipmentType(equipmentType);
                 equipmentInfo.setEquipmentStatusCode(0);
+                //equipmentInfo.setInsertUser();
                 equipmentInfo.setInsertTime(sysTime);
+                //equipmentInfo.setUpdateUser();
                 equipmentInfo.setUpdateTime(sysTime);
 
                 //设备信息表插入
@@ -200,7 +205,7 @@ public class ManageController {
             String approvalUser = object.getString("approvalUser");
             String equipmentName = object.getString("equipmentName");
             String equipmentType = object.getString("equipmentType");
-            String receiveStatusCode = object.getString("receiveStatusCode");
+            Integer receiveStatusCode = object.getInteger("receiveStatusCode");
 
             if (StringUtils.isEmpty(pageSize) || StringUtils.isEmpty(nextPage)) {
                 resultMap.put("errMsg", "参数错误！");
@@ -265,8 +270,7 @@ public class ManageController {
             Integer pageSize = object.getInteger("rows");                          // 每页显示数据量
             Integer nextPage = object.getInteger("page");                          // 页数
             String userName = object.getString("userName");
-            String equipmentChangeName = object.getString("equipmentChangeName");
-            String equipmentType = object.getString("equipmentType");
+            String equipmentName = object.getString("equipmentName");
 
             if (StringUtils.isEmpty(pageSize) || StringUtils.isEmpty(nextPage)) {
                 resultMap.put("errMsg", "参数错误！");
@@ -274,7 +278,7 @@ public class ManageController {
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
             IPage<Map<String, Object>> pendingInfo = equipmentChangeInfoMapper.queryChangingInfos(page, userName,
-                    equipmentChangeName, equipmentType);
+                    equipmentName);
             List<Map<String, Object>> list = pendingInfo.getRecords();
             resultMap.put("list", list);
             resultMap.put("success", true);
@@ -297,9 +301,9 @@ public class ManageController {
             Integer nextPage = object.getInteger("page");                          // 页数
             String applyUser = object.getString("applyUser");
             String approvalUser = object.getString("approvalUser");
-            String equipmentChangeName = object.getString("equipmentChangeName");
-            String equipmentChangeType = object.getString("equipmentChangeType");
-            String receiveStatusCode = object.getString("receiveStatusCode");
+            String equipmentName = object.getString("equipmentName");
+            String equipmentType = object.getString("equipmentType");
+            Integer receiveStatusCode = object.getInteger("receiveStatusCode");
 
             if (StringUtils.isEmpty(pageSize) || StringUtils.isEmpty(nextPage)) {
                 resultMap.put("errMsg", "参数错误！");
@@ -307,7 +311,7 @@ public class ManageController {
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
             IPage<Map<String, Object>> approvedInfo = equipmentChangeInfoMapper.queryChangedSucInfos(page, applyUser, approvalUser,
-                    equipmentChangeName, equipmentChangeType, receiveStatusCode);
+                    equipmentName, equipmentType, receiveStatusCode);
             List<Map<String, Object>> list = approvedInfo.getRecords();
             resultMap.put("list", list);
             resultMap.put("success", true);
@@ -330,7 +334,7 @@ public class ManageController {
             Integer nextPage = object.getInteger("page");                          // 页数
             String applyUser = object.getString("applyUser");
             String approvalUser = object.getString("approvalUser");
-            String equipmentChangeName = object.getString("equipmentChangeName");
+            String equipmentName = object.getString("equipmentName");
 
             if (StringUtils.isEmpty(pageSize) || StringUtils.isEmpty(nextPage)) {
                 resultMap.put("errMsg", "参数错误！");
@@ -338,7 +342,7 @@ public class ManageController {
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
             IPage<Map<String, Object>> approvedInfo = equipmentChangeInfoMapper.queryChangedErrInfos(page, applyUser, approvalUser,
-                    equipmentChangeName);
+                    equipmentName);
             List<Map<String, Object>> list = approvedInfo.getRecords();
             resultMap.put("list", list);
             resultMap.put("success", true);
@@ -348,6 +352,94 @@ public class ManageController {
         }
         return resultMap;
     }
+    //endregion
+
+    //region ************************************************** 设备审批 **************************************************
+
+    /**
+     * 空闲设备查看
+     */
+    @RequestMapping(value = "/queryFreeEquipments")
+    public Map<String, Object> queryFreeEquipments(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            String equipmentName = object.getString("equipmentName");
+
+            if (StringUtils.isEmpty(equipmentName)) {
+                resultMap.put("errMsg", "参数错误！");
+            }
+
+            int freeNum = equipmentInfoMapper.queryEquipmentFreeNum(equipmentName);
+            if (freeNum > 0) {
+                List<Map<String, Object>> list = equipmentInfoMapper.queryFreeEquipments(equipmentName);
+                resultMap.put("list", list);
+                resultMap.put("success", true);
+            } else {
+                resultMap.put("errMsg", "当前暂无空闲设备！");
+            }
+
+        } catch (Exception e) {
+            resultMap.put("error", "系统异常！");
+        }
+        return resultMap;
+    }
+
+    /**
+     * 设备申请审批
+     */
+    @RequestMapping(value = "/approveApplications")
+    public Map<String, Object> approveApplications(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            Integer keyId = object.getInteger("keyId");
+            String equipmentType = object.getString("equipmentType");
+            Integer approvalStatusCode = object.getInteger("approvalStatusCode");
+            String approvalLog = object.getString("approvalLog");
+
+            //获取当前登录人员信息
+
+
+            //系统时间
+            Date sysTime = new Date();
+
+            if (StringUtils.isEmpty(keyId) || StringUtils.isEmpty(equipmentType) || StringUtils.isEmpty(approvalStatusCode)) {
+                resultMap.put("errMsg", "参数错误！");
+            }
+
+            EquipmentApplyInfo equipmentApplyInfo = new EquipmentApplyInfo();
+            equipmentApplyInfo.setKeyId(keyId);
+            equipmentApplyInfo.setEquipmentType(equipmentType);
+            equipmentApplyInfo.setApprovalStatusCode(approvalStatusCode);
+            //equipmentApplyInfo.setApplyUserCode();
+            if (!StringUtils.isEmpty(approvalLog)) {
+                equipmentApplyInfo.setApprovalLog(approvalLog);
+            }
+            equipmentApplyInfo.setApprovalTime(sysTime);
+            equipmentApplyInfo.setReceiveStatusCode(0);
+
+            EquipmentInfo equipmentInfo = new EquipmentInfo();
+            equipmentInfo.setEquipmentType(equipmentType);
+            equipmentInfo.setEquipmentStatusCode(1);
+            //equipmentInfo.setUpdateUser();
+            equipmentInfo.setUpdateTime(sysTime);
+
+            //设备申请表更新
+            equipmentApplyInfoMapper.updateById(equipmentApplyInfo);
+
+            //设备信息表更新
+            equipmentInfoMapper.update(equipmentInfo, new QueryWrapper<EquipmentInfo>()
+                    .eq("equipmentType", equipmentType));
+
+            resultMap.put("success", true);
+
+        } catch (Exception e) {
+            resultMap.put("error", "系统异常！");
+        }
+        return resultMap;
+    }
+
     //endregion
 
     //region ************************************************** 员工查看 **************************************************
@@ -422,7 +514,9 @@ public class ManageController {
                 user.setRoleCode(roleCode);
                 user.setOnlineStatusCode(0);
                 user.setAccountStatusCode(0);
+                //user.setInsertUser();
                 user.setInsertTime(sysTime);
+                //user.setUpdateUser();
                 user.setUpdateTime(sysTime);
 
                 //员工信息表插入

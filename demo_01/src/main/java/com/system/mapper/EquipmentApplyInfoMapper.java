@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author author
@@ -27,7 +27,7 @@ public interface EquipmentApplyInfoMapper extends BaseMapper<EquipmentApplyInfo>
                                                      @Param("approvalUser") String approvalUser,
                                                      @Param("equipmentName") String equipmentName,
                                                      @Param("equipmentType") String equipmentType,
-                                                     @Param("receiveStatusCode") String receiveStatusCode);
+                                                     @Param("receiveStatusCode") Integer receiveStatusCode);
 
     IPage<Map<String, Object>> queryApprovedErrInfos(Page page,
                                                      @Param("applyUser") String applyUser,

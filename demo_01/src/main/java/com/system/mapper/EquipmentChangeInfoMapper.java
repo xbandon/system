@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author author
@@ -20,18 +20,17 @@ public interface EquipmentChangeInfoMapper extends BaseMapper<EquipmentChangeInf
 
     IPage<Map<String, Object>> queryChangingInfos(Page page,
                                                   @Param("userName") String userName,
-                                                  @Param("equipmentChangeName") String equipmentChangeName,
-                                                  @Param("equipmentType") String equipmentType);
+                                                  @Param("equipmentName") String equipmentName);
 
     IPage<Map<String, Object>> queryChangedSucInfos(Page page,
                                                     @Param("applyUser") String applyUser,
                                                     @Param("approvalUser") String approvalUser,
-                                                    @Param("equipmentChangeName") String equipmentChangeName,
-                                                    @Param("equipmentChangeType") String equipmentChangeType,
-                                                    @Param("receiveStatusCode") String receiveStatusCode);
+                                                    @Param("equipmentName") String equipmentName,
+                                                    @Param("equipmentType") String equipmentType,
+                                                    @Param("receiveStatusCode") Integer receiveStatusCode);
 
     IPage<Map<String, Object>> queryChangedErrInfos(Page page,
                                                     @Param("applyUser") String applyUser,
                                                     @Param("approvalUser") String approvalUser,
-                                                    @Param("equipmentChangeName") String equipmentChangeName);
+                                                    @Param("equipmentName") String equipmentName);
 }

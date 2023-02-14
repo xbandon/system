@@ -4,9 +4,10 @@
 
     <select id="queryChangingInfos" resultType="java.util.Map">
         SELECT
+        a.keyId,
+        a.srcEquipmentName,
+        a.srcEquipmentType,
         a.equipmentName,
-        a.equipmentType,
-        a.equipmentChangeName,
         u.userName,
         a.applyReason,
         DATE_FORMAT( a.applyTime, '%Y-%m-%d' ) AS applyTime
@@ -18,21 +19,18 @@
         <if test="userName!='' and userName != null">
             AND u.userName LIKE concat('%',#{userName},'%')
         </if>
-        <if test="equipmentChangeName!='' and equipmentChangeName != null">
-            AND a.equipmentChangeName LIKE concat('%',#{equipmentChangeName},'%')
-        </if>
-        <if test="equipmentType!='' and equipmentType != null">
-            AND a.equipmentType LIKE concat('%',#{equipmentType},'%')
+        <if test="equipmentName!='' and equipmentName != null">
+            AND a.equipmentName LIKE concat('%',#{equipmentName},'%')
         </if>
         ORDER BY a.applyTime
     </select>
 
     <select id="queryChangedSucInfos" resultType="java.util.Map">
         SELECT
+        a.srcEquipmentName,
+        a.srcEquipmentType,
         a.equipmentName,
         a.equipmentType,
-        a.equipmentChangeName,
-        a.equipmentChangeType,
         u1.userName AS applyUser,
         a.applyReason,
         DATE_FORMAT( a.applyTime, '%Y-%m-%d' ) AS applyTime,
@@ -54,11 +52,11 @@
         <if test="approvalUser!='' and approvalUser != null">
             AND u2.userName LIKE concat('%',#{approvalUser},'%')
         </if>
-        <if test="equipmentChangeName!='' and equipmentChangeName != null">
-            AND a.equipmentChangeName LIKE concat('%',#{equipmentChangeName},'%')
+        <if test="equipmentName!='' and equipmentName != null">
+            AND a.equipmentName LIKE concat('%',#{equipmentName},'%')
         </if>
-        <if test="equipmentChangeType!='' and equipmentChangeType != null">
-            AND a.equipmentChangeType LIKE concat('%',#{equipmentChangeType},'%')
+        <if test="equipmentType!='' and equipmentType != null">
+            AND a.equipmentType LIKE concat('%',#{equipmentType},'%')
         </if>
         <if test="receiveStatusCode!='' and receiveStatusCode != null">
             AND a.receiveStatusCode = #{receiveStatusCode}
@@ -68,9 +66,9 @@
 
     <select id="queryChangedErrInfos" resultType="java.util.Map">
         SELECT
-        a.equipmentName,
+        a.srcEquipmentName,
         a.equipmentType,
-        a.equipmentChangeName,
+        a.equipmentName,
         u1.userName AS applyUser,
         a.applyReason,
         DATE_FORMAT( a.applyTime, '%Y-%m-%d' ) AS applyTime,
@@ -89,8 +87,8 @@
         <if test="approvalUser!='' and approvalUser != null">
             AND u2.userName LIKE concat('%',#{approvalUser},'%')
         </if>
-        <if test="equipmentChangeName!='' and equipmentChangeName != null">
-            AND a.equipmentChangeName LIKE concat('%',#{equipmentChangeName},'%')
+        <if test="equipmentName!='' and equipmentName != null">
+            AND a.equipmentName LIKE concat('%',#{equipmentName},'%')
         </if>
         ORDER BY a.approvalTime DESC
     </select>

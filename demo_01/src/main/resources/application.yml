@@ -8,6 +8,8 @@ spring:
     username: root
     password: root
 
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+logging:
+  level:
+    com:
+      system:
+        mapper: debug
