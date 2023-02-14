@@ -7,13 +7,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.segments.MergeSegments;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.system.entity.EquipmentApplyInfo;
-import com.system.entity.EquipmentInfo;
-import com.system.entity.UserInfo;
-import com.system.mapper.EquipmentApplyInfoMapper;
-import com.system.mapper.EquipmentChangeInfoMapper;
-import com.system.mapper.EquipmentInfoMapper;
-import com.system.mapper.UserInfoMapper;
+import com.system.entity.*;
+import com.system.mapper.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.StringUtils;
@@ -41,6 +36,9 @@ public class ManagerController {
 
     @Resource
     EquipmentChangeInfoMapper equipmentChangeInfoMapper;
+
+    @Resource
+    EquipmentScrapInfoMapper equipmentScrapInfoMapper;
 
     //region ************************************************** 库存管理 **************************************************
 
@@ -388,6 +386,7 @@ public class ManagerController {
     /**
      * 设备申请审批
      */
+    @Transactional
     @RequestMapping(value = "/approveApplications")
     public Map<String, Object> approveApplications(@RequestBody String json) {
         Map<String, Object> resultMap = new HashMap<>();
@@ -435,6 +434,89 @@ public class ManagerController {
             resultMap.put("success", true);
 
         } catch (Exception e) {
+            //事务手动回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            resultMap.put("error", "系统异常！");
+        }
+        return resultMap;
+    }
+
+    /**
+     * 设备更换审批
+     */
+    @Transactional
+    @RequestMapping(value = "/approveChangeApplications")
+    public Map<String, Object> approveChangeApplications(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            Integer keyId = object.getInteger("keyId");
+            String srcEquipmentName = object.getString("srcEquipmentName");
+            String srcEquipmentType = object.getString("srcEquipmentType");
+            String equipmentType = object.getString("equipmentType");
+            String applyReason = object.getString("applyReason");
+            Integer approvalStatusCode = object.getInteger("approvalStatusCode");
+            String approvalLog = object.getString("approvalLog");
+
+            //获取当前登录人员信息
+
+
+            //系统时间
+            Date sysTime = new Date();
+
+            if (StringUtils.isEmpty(keyId) || StringUtils.isEmpty(srcEquipmentName) || StringUtils.isEmpty(srcEquipmentType) ||
+                    StringUtils.isEmpty(equipmentType) || StringUtils.isEmpty(applyReason) || StringUtils.isEmpty(approvalStatusCode)) {
+                resultMap.put("errMsg", "参数错误！");
+            }
+
+            EquipmentChangeInfo equipmentChangeInfo = new EquipmentChangeInfo();
+            equipmentChangeInfo.setKeyId(keyId);
+            equipmentChangeInfo.setEquipmentType(equipmentType);
+            equipmentChangeInfo.setApprovalStatusCode(approvalStatusCode);
+            //equipmentApplyInfo.setApplyUserCode();
+            if (!StringUtils.isEmpty(approvalLog)) {
+                equipmentChangeInfo.setApprovalLog(approvalLog);
+            }
+            equipmentChangeInfo.setApprovalTime(sysTime);
+            equipmentChangeInfo.setReceiveStatusCode(0);
+
+            EquipmentInfo srcEquipmentInfo = new EquipmentInfo();
+            srcEquipmentInfo.setEquipmentType(srcEquipmentType);
+            srcEquipmentInfo.setEquipmentStatusCode(3);
+            srcEquipmentInfo.setUserCode(null);
+            //equipmentInfo.setUpdateUser();
+            srcEquipmentInfo.setUpdateTime(sysTime);
+
+            EquipmentInfo equipmentInfo = new EquipmentInfo();
+            equipmentInfo.setEquipmentType(equipmentType);
+            equipmentInfo.setEquipmentStatusCode(1);
+            //equipmentInfo.setUpdateUser();
+            equipmentInfo.setUpdateTime(sysTime);
+
+            EquipmentScrapInfo equipmentScrapInfo = new EquipmentScrapInfo();
+            equipmentScrapInfo.setEquipmentName(srcEquipmentName);
+            equipmentScrapInfo.setEquipmentType(srcEquipmentType);
+            //equipmentScrapInfo.setScrapUserCode();
+            equipmentScrapInfo.setScrapTime(sysTime);
+            equipmentScrapInfo.setScrapLog(applyReason);
+
+            //设备更换表更新
+            equipmentChangeInfoMapper.updateById(equipmentChangeInfo);
+
+            //设备信息表更新
+            equipmentInfoMapper.update(srcEquipmentInfo, new QueryWrapper<EquipmentInfo>()
+                    .eq("equipmentType", srcEquipmentType));
+            equipmentInfoMapper.update(equipmentInfo, new QueryWrapper<EquipmentInfo>()
+                    .eq("equipmentType", equipmentType));
+
+            //设备报废表插入
+            equipmentScrapInfoMapper.insert(equipmentScrapInfo);
+
+            resultMap.put("success", true);
+
+        } catch (Exception e) {
+            //事务手动回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             resultMap.put("error", "系统异常！");
         }
         return resultMap;

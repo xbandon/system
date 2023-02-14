@@ -1,6 +1,7 @@
 package com.system.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
@@ -33,26 +34,31 @@ public class EquipmentScrapInfo implements Serializable {
     /**
      * 设备名称
      */
+    @TableField("equipmentName")
     private String equipmentName;
 
     /**
      * 设备型号
      */
+    @TableField("equipmentType")
     private String equipmentType;
 
     /**
      * 报废人编号
      */
+    @TableField("scrapUserCode")
     private Integer scrapUserCode;
 
     /**
      * 报废时间
      */
+    @TableField("scrapTime")
     private Date scrapTime;
 
     /**
      * 报废记录
      */
+    @TableField("scrapLog")
     private String scrapLog;
 
 
