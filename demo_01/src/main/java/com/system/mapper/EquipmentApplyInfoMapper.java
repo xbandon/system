@@ -18,10 +18,9 @@ import java.util.Map;
  */
 public interface EquipmentApplyInfoMapper extends BaseMapper<EquipmentApplyInfo> {
 
-    IPage<Map<String, Object>> queryPendingInfos(Page page,
-                                                 @Param("userName") String userName,
-                                                 @Param("equipmentName") String equipmentName);
-
+    IPage<Map<String, Object>> queryApprovingInfos(Page page,
+                                                   @Param("userName") String userName,
+                                                   @Param("equipmentName") String equipmentName);
 
     IPage<Map<String, Object>> queryApprovedSucInfos(Page page,
                                                      @Param("applyUser") String applyUser,
@@ -29,7 +28,6 @@ public interface EquipmentApplyInfoMapper extends BaseMapper<EquipmentApplyInfo>
                                                      @Param("equipmentName") String equipmentName,
                                                      @Param("equipmentType") String equipmentType,
                                                      @Param("receiveStatusCode") String receiveStatusCode);
-
 
     IPage<Map<String, Object>> queryApprovedErrInfos(Page page,
                                                      @Param("applyUser") String applyUser,

@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.system.entity.EquipmentInfo;
 import com.system.entity.UserInfo;
 import com.system.mapper.EquipmentApplyInfoMapper;
+import com.system.mapper.EquipmentChangeInfoMapper;
 import com.system.mapper.EquipmentInfoMapper;
 import com.system.mapper.UserInfoMapper;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,9 @@ public class ManageController {
 
     @Resource
     EquipmentApplyInfoMapper equipmentApplyInfoMapper;
+
+    @Resource
+    EquipmentChangeInfoMapper equipmentChangeInfoMapper;
 
     //region ************************************************** 库存管理 **************************************************
 
@@ -156,8 +160,8 @@ public class ManageController {
     /**
      * 待审批记录查看
      */
-    @RequestMapping(value = "/queryPendingInfos")
-    public Map<String, Object> queryPendingInfos(@RequestBody String json) {
+    @RequestMapping(value = "/queryApprovingInfos")
+    public Map<String, Object> queryApprovingInfos(@RequestBody String json) {
         Map<String, Object> resultMap = new HashMap<>();
         try {
             JSONObject object = JSON.parseObject(json);
@@ -171,7 +175,7 @@ public class ManageController {
             }
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
-            IPage<Map<String, Object>> pendingInfo = equipmentApplyInfoMapper.queryPendingInfos(page, userName, equipmentName);
+            IPage<Map<String, Object>> pendingInfo = equipmentApplyInfoMapper.queryApprovingInfos(page, userName, equipmentName);
             List<Map<String, Object>> list = pendingInfo.getRecords();
             resultMap.put("list", list);
             resultMap.put("success", true);
@@ -246,6 +250,104 @@ public class ManageController {
         return resultMap;
     }
 
+    //endregion
+
+    //region ************************************************** 设备更换 **************************************************
+
+    /**
+     * 待审批记录查看
+     */
+    @RequestMapping(value = "/queryChangingInfos")
+    public Map<String, Object> queryChangingInfos(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            Integer pageSize = object.getInteger("rows");                          // 每页显示数据量
+            Integer nextPage = object.getInteger("page");                          // 页数
+            String userName = object.getString("userName");
+            String equipmentChangeName = object.getString("equipmentChangeName");
+            String equipmentType = object.getString("equipmentType");
+
+            if (StringUtils.isEmpty(pageSize) || StringUtils.isEmpty(nextPage)) {
+                resultMap.put("errMsg", "参数错误！");
+            }
+
+            Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
+            IPage<Map<String, Object>> pendingInfo = equipmentChangeInfoMapper.queryChangingInfos(page, userName,
+                    equipmentChangeName, equipmentType);
+            List<Map<String, Object>> list = pendingInfo.getRecords();
+            resultMap.put("list", list);
+            resultMap.put("success", true);
+
+        } catch (Exception e) {
+            resultMap.put("error", "系统异常！");
+        }
+        return resultMap;
+    }
+
+    /**
+     * 审批通过记录查看
+     */
+    @RequestMapping(value = "/queryChangedSucInfos")
+    public Map<String, Object> queryChangedSucInfos(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            Integer pageSize = object.getInteger("rows");                          // 每页显示数据量
+            Integer nextPage = object.getInteger("page");                          // 页数
+            String applyUser = object.getString("applyUser");
+            String approvalUser = object.getString("approvalUser");
+            String equipmentChangeName = object.getString("equipmentChangeName");
+            String equipmentChangeType = object.getString("equipmentChangeType");
+            String receiveStatusCode = object.getString("receiveStatusCode");
+
+            if (StringUtils.isEmpty(pageSize) || StringUtils.isEmpty(nextPage)) {
+                resultMap.put("errMsg", "参数错误！");
+            }
+
+            Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
+            IPage<Map<String, Object>> approvedInfo = equipmentChangeInfoMapper.queryChangedSucInfos(page, applyUser, approvalUser,
+                    equipmentChangeName, equipmentChangeType, receiveStatusCode);
+            List<Map<String, Object>> list = approvedInfo.getRecords();
+            resultMap.put("list", list);
+            resultMap.put("success", true);
+
+        } catch (Exception e) {
+            resultMap.put("error", "系统异常！");
+        }
+        return resultMap;
+    }
+
+    /**
+     * 审批未通过记录查看
+     */
+    @RequestMapping(value = "/queryChangedErrInfos")
+    public Map<String, Object> queryChangedErrInfos(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            Integer pageSize = object.getInteger("rows");                          // 每页显示数据量
+            Integer nextPage = object.getInteger("page");                          // 页数
+            String applyUser = object.getString("applyUser");
+            String approvalUser = object.getString("approvalUser");
+            String equipmentChangeName = object.getString("equipmentChangeName");
+
+            if (StringUtils.isEmpty(pageSize) || StringUtils.isEmpty(nextPage)) {
+                resultMap.put("errMsg", "参数错误！");
+            }
+
+            Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
+            IPage<Map<String, Object>> approvedInfo = equipmentChangeInfoMapper.queryChangedErrInfos(page, applyUser, approvalUser,
+                    equipmentChangeName);
+            List<Map<String, Object>> list = approvedInfo.getRecords();
+            resultMap.put("list", list);
+            resultMap.put("success", true);
+
+        } catch (Exception e) {
+            resultMap.put("error", "系统异常！");
+        }
+        return resultMap;
+    }
     //endregion
 
     //region ************************************************** 员工查看 **************************************************

@@ -21,7 +21,6 @@ public interface EquipmentInfoMapper extends BaseMapper<EquipmentInfo> {
     IPage<Map<String, Object>> queryEquipmentStock(Page page,
                                                    @Param("equipmentName") String equipmentName);
 
-
     IPage<Map<String, Object>> queryEquipmentInfos(Page page,
                                                    @Param("equipmentName") String equipmentName,
                                                    @Param("equipmentType") String equipmentType,
