@@ -17,9 +17,9 @@
         LEFT JOIN dictionary_info d1 ON d1.dicTypeCode = 0
         AND u.roleCode = d1.dicCode
         LEFT JOIN dictionary_info d2 ON d2.dicTypeCode = 1
-        AND u.roleCode = d2.dicCode
+        AND u.onlineStatusCode = d2.dicCode
         LEFT JOIN dictionary_info d3 ON d3.dicTypeCode = 2
-        AND u.roleCode = d3.dicCode
+        AND u.accountStatusCode = d3.dicCode
         WHERE
         1 = 1
         <if test="userCode!='' and userCode != null">
