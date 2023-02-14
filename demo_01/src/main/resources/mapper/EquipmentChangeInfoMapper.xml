@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.mapper.EquipmentChangeInfoMapper">
+
+    <select id="queryChangingInfos" resultType="java.util.Map">
+        SELECT
+        a.equipmentName,
+        a.equipmentType,
+        a.equipmentChangeName,
+        u.userName,
+        a.applyReason,
+        DATE_FORMAT( a.applyTime, '%Y-%m-%d' ) AS applyTime
+        FROM
+        equipment_change_info a
+        LEFT JOIN user_info u ON a.applyUserCode = u.userCode
+        WHERE
+        a.approvalStatusCode = 0
+        <if test="userName!='' and userName != null">
+            AND u.userName LIKE concat('%',#{userName},'%')
+        </if>
+        <if test="equipmentChangeName!='' and equipmentChangeName != null">
+            AND a.equipmentChangeName LIKE concat('%',#{equipmentChangeName},'%')
+        </if>
+        <if test="equipmentType!='' and equipmentType != null">
+            AND a.equipmentType LIKE concat('%',#{equipmentType},'%')
+        </if>
+        ORDER BY a.applyTime
+    </select>
+
+    <select id="queryChangedSucInfos" resultType="java.util.Map">
+        SELECT
+        a.equipmentName,
+        a.equipmentType,
+        a.equipmentChangeName,
+        a.equipmentChangeType,
+        u1.userName AS applyUser,
+        a.applyReason,
+        DATE_FORMAT( a.applyTime, '%Y-%m-%d' ) AS applyTime,
+        u2.userName AS approvalUser,
+        DATE_FORMAT( a.approvalTime, '%Y-%m-%d' ) AS approvalTime,
+        d.dicValue AS receiveStatus,
+        DATE_FORMAT( a.receiveTime, '%Y-%m-%d' ) AS receiveTime
+        FROM
+        equipment_change_info a
+        LEFT JOIN user_info u1 ON a.applyUserCode = u1.userCode
+        LEFT JOIN user_info u2 ON a.approvalUserCode = u2.userCode
+        LEFT JOIN dictionary_info d ON d.dicTypeCode = 5
+        AND a.receiveStatusCode = d.dicCode
+        WHERE
+        a.approvalStatusCode = 1
+        <if test="applyUser!='' and applyUser != null">
+            AND u1.userName LIKE concat('%',#{applyUser},'%')
+        </if>
+        <if test="approvalUser!='' and approvalUser != null">
+            AND u2.userName LIKE concat('%',#{approvalUser},'%')
+        </if>
+        <if test="equipmentChangeName!='' and equipmentChangeName != null">
+            AND a.equipmentChangeName LIKE concat('%',#{equipmentChangeName},'%')
+        </if>
+        <if test="equipmentChangeType!='' and equipmentChangeType != null">
+            AND a.equipmentChangeType LIKE concat('%',#{equipmentChangeType},'%')
+        </if>
+        <if test="receiveStatusCode!='' and receiveStatusCode != null">
+            AND a.receiveStatusCode = #{receiveStatusCode}
+        </if>
+        ORDER BY a.approvalTime DESC, a.receiveTime DESC
+    </select>
+
+    <select id="queryChangedErrInfos" resultType="java.util.Map">
+        SELECT
+        a.equipmentName,
+        a.equipmentType,
+        a.equipmentChangeName,
+        u1.userName AS applyUser,
+        a.applyReason,
+        DATE_FORMAT( a.applyTime, '%Y-%m-%d' ) AS applyTime,
+        u2.userName AS approvalUser,
+        a.approvalLog,
+        DATE_FORMAT( a.approvalTime, '%Y-%m-%d' ) AS approvalTime
+        FROM
+        equipment_change_info a
+        LEFT JOIN user_info u1 ON a.applyUserCode = u1.userCode
+        LEFT JOIN user_info u2 ON a.approvalUserCode = u2.userCode
+        WHERE
+        a.approvalStatusCode = 2
+        <if test="applyUser!='' and applyUser != null">
+            AND u1.userName LIKE concat('%',#{applyUser},'%')
+        </if>
+        <if test="approvalUser!='' and approvalUser != null">
+            AND u2.userName LIKE concat('%',#{approvalUser},'%')
+        </if>
+        <if test="equipmentChangeName!='' and equipmentChangeName != null">
+            AND a.equipmentChangeName LIKE concat('%',#{equipmentChangeName},'%')
+        </if>
+        ORDER BY a.approvalTime DESC
+    </select>
+</mapper>
