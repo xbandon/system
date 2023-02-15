@@ -2,4 +2,32 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.system.mapper.EquipmentScrapInfoMapper">
 
+    <select id="queryScrapInfos" resultType="java.util.Map">
+        SELECT
+        s.keyId,
+        s.equipmentName,
+        s.equipmentType,
+        u.userName AS scrapUser,
+        DATE_FORMAT( s.scrapTime, '%Y-%m-%d' ) AS scrapTime,
+        s.scrapLog
+        FROM
+        equipment_scrap_info s
+        LEFT JOIN user_info u ON s.scrapUserCode = u.userCode
+        WHERE
+        1 = 1
+        <if test="equipmentName!='' and equipmentName != null">
+            AND s.equipmentName LIKE concat('%',#{equipmentName},'%')
+        </if>
+        <if test="equipmentType!='' and equipmentType != null">
+            AND s.equipmentType LIKE concat('%',#{equipmentType},'%')
+        </if>
+        <if test="scrapUser!='' and scrapUser != null">
+            AND u.userName LIKE concat('%',#{scrapUser},'%')
+        </if>
+        <if test="scrapTime!='' and scrapTime != null">
+            AND s.scrapTime = #{scrapTime}
+        </if>
+        ORDER BY s.scrapTime DESC
+    </select>
+
 </mapper>

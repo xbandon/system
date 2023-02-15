@@ -96,9 +96,9 @@ public class ManagerController {
             }
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
-            IPage<Map<String, Object>> equipmentInfo = equipmentInfoMapper.queryEquipmentInfos(page, equipmentName, equipmentType,
+            IPage<Map<String, Object>> equipmentInfos = equipmentInfoMapper.queryEquipmentInfos(page, equipmentName, equipmentType,
                     equipmentStatusCode, userName, insertTime);
-            List<Map<String, Object>> list = equipmentInfo.getRecords();
+            List<Map<String, Object>> list = equipmentInfos.getRecords();
             resultMap.put("list", list);
             resultMap.put("success", true);
 
@@ -178,8 +178,8 @@ public class ManagerController {
             }
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
-            IPage<Map<String, Object>> pendingInfo = equipmentApplyInfoMapper.queryApprovingInfos(page, userName, equipmentName);
-            List<Map<String, Object>> list = pendingInfo.getRecords();
+            IPage<Map<String, Object>> approvingInfo = equipmentApplyInfoMapper.queryApprovingInfos(page, userName, equipmentName);
+            List<Map<String, Object>> list = approvingInfo.getRecords();
             resultMap.put("list", list);
             resultMap.put("success", true);
 
@@ -210,9 +210,9 @@ public class ManagerController {
             }
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
-            IPage<Map<String, Object>> approvedInfo = equipmentApplyInfoMapper.queryApprovedSucInfos(page, applyUser, approvalUser,
+            IPage<Map<String, Object>> approvedSucInfo = equipmentApplyInfoMapper.queryApprovedSucInfos(page, applyUser, approvalUser,
                     equipmentName, equipmentType, receiveStatusCode);
-            List<Map<String, Object>> list = approvedInfo.getRecords();
+            List<Map<String, Object>> list = approvedSucInfo.getRecords();
             resultMap.put("list", list);
             resultMap.put("success", true);
 
@@ -241,9 +241,9 @@ public class ManagerController {
             }
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
-            IPage<Map<String, Object>> approvedInfo = equipmentApplyInfoMapper.queryApprovedErrInfos(page, applyUser, approvalUser,
+            IPage<Map<String, Object>> approvedErrInfo = equipmentApplyInfoMapper.queryApprovedErrInfos(page, applyUser, approvalUser,
                     equipmentName);
-            List<Map<String, Object>> list = approvedInfo.getRecords();
+            List<Map<String, Object>> list = approvedErrInfo.getRecords();
             resultMap.put("list", list);
             resultMap.put("success", true);
 
@@ -275,9 +275,9 @@ public class ManagerController {
             }
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
-            IPage<Map<String, Object>> pendingInfo = equipmentChangeInfoMapper.queryChangingInfos(page, userName,
+            IPage<Map<String, Object>> changingInfo = equipmentChangeInfoMapper.queryChangingInfos(page, userName,
                     equipmentName);
-            List<Map<String, Object>> list = pendingInfo.getRecords();
+            List<Map<String, Object>> list = changingInfo.getRecords();
             resultMap.put("list", list);
             resultMap.put("success", true);
 
@@ -308,9 +308,9 @@ public class ManagerController {
             }
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
-            IPage<Map<String, Object>> approvedInfo = equipmentChangeInfoMapper.queryChangedSucInfos(page, applyUser, approvalUser,
+            IPage<Map<String, Object>> changedSucInfo = equipmentChangeInfoMapper.queryChangedSucInfos(page, applyUser, approvalUser,
                     equipmentName, equipmentType, receiveStatusCode);
-            List<Map<String, Object>> list = approvedInfo.getRecords();
+            List<Map<String, Object>> list = changedSucInfo.getRecords();
             resultMap.put("list", list);
             resultMap.put("success", true);
 
@@ -339,9 +339,9 @@ public class ManagerController {
             }
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
-            IPage<Map<String, Object>> approvedInfo = equipmentChangeInfoMapper.queryChangedErrInfos(page, applyUser, approvalUser,
+            IPage<Map<String, Object>> changedErrInfo = equipmentChangeInfoMapper.queryChangedErrInfos(page, applyUser, approvalUser,
                     equipmentName);
-            List<Map<String, Object>> list = approvedInfo.getRecords();
+            List<Map<String, Object>> list = changedErrInfo.getRecords();
             resultMap.put("list", list);
             resultMap.put("success", true);
 
@@ -517,6 +517,42 @@ public class ManagerController {
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            resultMap.put("error", "系统异常！");
+        }
+        return resultMap;
+    }
+
+    //endregion
+
+    //region ************************************************** 报废记录 **************************************************
+
+    /**
+     * 报废记录查看
+     */
+    @RequestMapping(value = "/queryScrapInfos")
+    public Map<String, Object> queryScrapInfos(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            Integer pageSize = object.getInteger("rows");                          // 每页显示数据量
+            Integer nextPage = object.getInteger("page");                          // 页数
+            String equipmentName = object.getString("equipmentName");
+            String equipmentType = object.getString("equipmentType");
+            String scrapUser = object.getString("scrapUser");
+            String scrapTime = object.getString("scrapTime");
+
+            if (StringUtils.isEmpty(pageSize) || StringUtils.isEmpty(nextPage)) {
+                resultMap.put("errMsg", "参数错误！");
+            }
+
+            Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
+            IPage<Map<String, Object>> scrapInfos = equipmentScrapInfoMapper.queryScrapInfos(page, equipmentName, equipmentType,
+                    scrapUser, scrapTime);
+            List<Map<String, Object>> list = scrapInfos.getRecords();
+            resultMap.put("list", list);
+            resultMap.put("success", true);
+
+        } catch (Exception e) {
             resultMap.put("error", "系统异常！");
         }
         return resultMap;
