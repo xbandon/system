@@ -62,6 +62,12 @@ public class ManagerController {
             IPage<Map<String, Object>> equipmentStock = equipmentInfoMapper.queryEquipmentStock(page, equipmentName);
             List<Map<String, Object>> list = equipmentStock.getRecords();
 
+            if (!list.isEmpty()) {
+                resultMap.put("total", equipmentStock.getTotal());
+                resultMap.put("current", equipmentStock.getCurrent());
+                resultMap.put("pages", equipmentStock.getPages());
+            }
+
             resultMap.put("list", list);
             resultMap.put("success", true);
 
@@ -99,6 +105,13 @@ public class ManagerController {
             IPage<Map<String, Object>> equipmentInfos = equipmentInfoMapper.queryEquipmentInfos(page, equipmentName, equipmentType,
                     equipmentStatusCode, userName, insertTime);
             List<Map<String, Object>> list = equipmentInfos.getRecords();
+
+            if (!list.isEmpty()) {
+                resultMap.put("total", equipmentInfos.getTotal());
+                resultMap.put("current", equipmentInfos.getCurrent());
+                resultMap.put("pages", equipmentInfos.getPages());
+            }
+
             resultMap.put("list", list);
             resultMap.put("success", true);
 
@@ -180,6 +193,13 @@ public class ManagerController {
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
             IPage<Map<String, Object>> approvingInfo = equipmentApplyInfoMapper.queryApprovingInfos(page, userName, equipmentName);
             List<Map<String, Object>> list = approvingInfo.getRecords();
+
+            if (!list.isEmpty()) {
+                resultMap.put("total", approvingInfo.getTotal());
+                resultMap.put("current", approvingInfo.getCurrent());
+                resultMap.put("pages", approvingInfo.getPages());
+            }
+
             resultMap.put("list", list);
             resultMap.put("success", true);
 
@@ -213,6 +233,13 @@ public class ManagerController {
             IPage<Map<String, Object>> approvedSucInfo = equipmentApplyInfoMapper.queryApprovedSucInfos(page, applyUser, approvalUser,
                     equipmentName, equipmentType, receiveStatusCode);
             List<Map<String, Object>> list = approvedSucInfo.getRecords();
+
+            if (!list.isEmpty()) {
+                resultMap.put("total", approvedSucInfo.getTotal());
+                resultMap.put("current", approvedSucInfo.getCurrent());
+                resultMap.put("pages", approvedSucInfo.getPages());
+            }
+
             resultMap.put("list", list);
             resultMap.put("success", true);
 
@@ -244,6 +271,13 @@ public class ManagerController {
             IPage<Map<String, Object>> approvedErrInfo = equipmentApplyInfoMapper.queryApprovedErrInfos(page, applyUser, approvalUser,
                     equipmentName);
             List<Map<String, Object>> list = approvedErrInfo.getRecords();
+
+            if (!list.isEmpty()) {
+                resultMap.put("total", approvedErrInfo.getTotal());
+                resultMap.put("current", approvedErrInfo.getCurrent());
+                resultMap.put("pages", approvedErrInfo.getPages());
+            }
+
             resultMap.put("list", list);
             resultMap.put("success", true);
 
@@ -278,6 +312,13 @@ public class ManagerController {
             IPage<Map<String, Object>> changingInfo = equipmentChangeInfoMapper.queryChangingInfos(page, userName,
                     equipmentName);
             List<Map<String, Object>> list = changingInfo.getRecords();
+
+            if (!list.isEmpty()) {
+                resultMap.put("total", changingInfo.getTotal());
+                resultMap.put("current", changingInfo.getCurrent());
+                resultMap.put("pages", changingInfo.getPages());
+            }
+
             resultMap.put("list", list);
             resultMap.put("success", true);
 
@@ -311,6 +352,13 @@ public class ManagerController {
             IPage<Map<String, Object>> changedSucInfo = equipmentChangeInfoMapper.queryChangedSucInfos(page, applyUser, approvalUser,
                     equipmentName, equipmentType, receiveStatusCode);
             List<Map<String, Object>> list = changedSucInfo.getRecords();
+
+            if (!list.isEmpty()) {
+                resultMap.put("total", changedSucInfo.getTotal());
+                resultMap.put("current", changedSucInfo.getCurrent());
+                resultMap.put("pages", changedSucInfo.getPages());
+            }
+
             resultMap.put("list", list);
             resultMap.put("success", true);
 
@@ -342,6 +390,13 @@ public class ManagerController {
             IPage<Map<String, Object>> changedErrInfo = equipmentChangeInfoMapper.queryChangedErrInfos(page, applyUser, approvalUser,
                     equipmentName);
             List<Map<String, Object>> list = changedErrInfo.getRecords();
+
+            if (!list.isEmpty()) {
+                resultMap.put("total", changedErrInfo.getTotal());
+                resultMap.put("current", changedErrInfo.getCurrent());
+                resultMap.put("pages", changedErrInfo.getPages());
+            }
+
             resultMap.put("list", list);
             resultMap.put("success", true);
 
@@ -549,6 +604,13 @@ public class ManagerController {
             IPage<Map<String, Object>> scrapInfos = equipmentScrapInfoMapper.queryScrapInfos(page, equipmentName, equipmentType,
                     scrapUser, scrapTime);
             List<Map<String, Object>> list = scrapInfos.getRecords();
+
+            if (!list.isEmpty()) {
+                resultMap.put("total", scrapInfos.getTotal());
+                resultMap.put("current", scrapInfos.getCurrent());
+                resultMap.put("pages", scrapInfos.getPages());
+            }
+
             resultMap.put("list", list);
             resultMap.put("success", true);
 
@@ -586,6 +648,13 @@ public class ManagerController {
             IPage<Map<String, Object>> userInfo = userInfoMapper.queryUserInfos(page, userCode, userName, onlineStatusCode,
                     accountStatusCode, insertTime);
             List<Map<String, Object>> list = userInfo.getRecords();
+
+            if (!list.isEmpty()) {
+                resultMap.put("total", userInfo.getTotal());
+                resultMap.put("current", userInfo.getCurrent());
+                resultMap.put("pages", userInfo.getPages());
+            }
+
             resultMap.put("list", list);
             resultMap.put("success", true);
 

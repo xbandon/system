@@ -29,16 +29,16 @@ public class EquipmentInfo implements Serializable {
     private Integer equipmentCode;
 
     /**
-     * 设备型号
-     */
-    @TableField("equipmentType")
-    private String equipmentType;
-
-    /**
      * 设备名称
      */
     @TableField("equipmentName")
     private String equipmentName;
+
+    /**
+     * 设备型号
+     */
+    @TableField("equipmentType")
+    private String equipmentType;
 
     /**
      * 设备状态码
