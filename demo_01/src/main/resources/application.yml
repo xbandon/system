@@ -10,6 +10,4 @@ spring:
 
 logging:
   level:
-    com:
-      system:
-        mapper: debug
+    com.system.mapper: debug

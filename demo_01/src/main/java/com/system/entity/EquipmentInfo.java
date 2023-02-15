@@ -53,13 +53,13 @@ public class EquipmentInfo implements Serializable {
     private Integer userCode;
 
     /**
-     * 创建人
+     * 入库人
      */
     @TableField("insertUser")
     private Integer insertUser;
 
     /**
-     * 创建时间
+     * 入库时间
      */
     @TableField("insertTime")
     private Date insertTime;

@@ -80,16 +80,16 @@ public class UserInfo implements Serializable {
     private Integer accountStatusCode;
 
     /**
-     * 创建人
+     * 入职时间
      */
-    @TableField("insertUser")
-    private Integer insertUser;
+    @TableField("entryTime")
+    private Date entryTime;
 
     /**
-     * 创建时间
+     * 离职时间
      */
-    @TableField("insertTime")
-    private Date insertTime;
+    @TableField("quitTime")
+    private Date quitTime;
 
     /**
      * 更新人

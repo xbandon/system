@@ -1,6 +1,7 @@
 package com.system.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
@@ -33,41 +34,49 @@ public class DictionaryInfo implements Serializable {
     /**
      * 字典类型
      */
+    @TableField("dicType")
     private String dicType;
 
     /**
      * 字典类型编码
      */
+    @TableField("dicTypeCode")
     private Integer dicTypeCode;
 
     /**
      * 字典编码
      */
+    @TableField("dicCode")
     private Integer dicCode;
 
     /**
      * 字典内容
      */
+    @TableField("dicValue")
     private String dicValue;
 
     /**
      * 创建人
      */
+    @TableField("insertUser")
     private Integer insertUser;
 
     /**
      * 创建时间
      */
+    @TableField("insertTime")
     private Date insertTime;
 
     /**
      * 更新人
      */
+    @TableField("updateUser")
     private Integer updateUser;
 
     /**
      * 更新时间
      */
+    @TableField("updateTime")
     private Date updateTime;
 
 

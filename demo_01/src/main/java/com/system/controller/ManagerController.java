@@ -632,8 +632,7 @@ public class ManagerController {
                 user.setRoleCode(roleCode);
                 user.setOnlineStatusCode(0);
                 user.setAccountStatusCode(0);
-                //user.setInsertUser();
-                user.setInsertTime(sysTime);
+                user.setEntryTime(sysTime);
                 //user.setUpdateUser();
                 user.setUpdateTime(sysTime);
 
