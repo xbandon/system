@@ -139,6 +139,8 @@ public class ManagerController {
             //系统时间
             Date sysTime = new Date();
 
+            System.out.println(1/0);
+
             //设备型号重复检查
             Long isExist = equipmentInfoMapper.selectCount(new QueryWrapper<EquipmentInfo>()
                     .eq("equipmentType", equipmentType));

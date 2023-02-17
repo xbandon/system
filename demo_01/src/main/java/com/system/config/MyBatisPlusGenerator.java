@@ -1,12 +1,11 @@
-package com.system;
+package com.system.config;
 
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.OutputFile;
-import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 
 import java.util.Collections;
 
-public class Generator {
+public class MyBatisPlusGenerator {
     public static void main(String[] args) {
         FastAutoGenerator.create("jdbc:mysql://localhost:3306/test", "root", "root")
                 //全局配置

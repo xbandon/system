@@ -32,11 +32,16 @@
         e.equipmentName,
         e.equipmentType,
         d.dicValue AS equipmentStatus,
-        u.userName,
-        DATE_FORMAT( e.insertTime, '%Y-%m-%d' ) AS insertTime
+        u1.userName,
+        u2.userName AS insertUser,
+        DATE_FORMAT( e.insertTime, '%Y-%m-%d %H:%i:%s' ) AS insertTime,
+        u3.userName AS updateUser,
+        DATE_FORMAT( e.updateTime, '%Y-%m-%d %H:%i:%s' ) AS updateTime
         FROM
         equipment_info e
-        LEFT JOIN user_info u ON e.userCode = u.userCode
+        LEFT JOIN user_info u1 ON e.userCode = u1.userCode
+        LEFT JOIN user_info u2 ON e.insertUser = u2.userCode
+        LEFT JOIN user_info u3 ON e.updateUser = u3.userCode
         LEFT JOIN dictionary_info d ON d.dicTypeCode = 3
         AND e.equipmentStatusCode = d.dicCode
         WHERE
@@ -56,7 +61,7 @@
         <if test="insertTime!='' and insertTime != null">
             AND e.insertTime = #{insertTime}
         </if>
-        ORDER BY e.updateTime DESC
+        ORDER BY e.updateTime DESC, e.equipmentType
     </select>
 
     <select id="queryFreeEquipments" resultType="java.util.Map">
