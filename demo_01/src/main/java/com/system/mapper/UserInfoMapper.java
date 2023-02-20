@@ -19,10 +19,10 @@ import java.util.Map;
 public interface UserInfoMapper extends BaseMapper<UserInfo> {
 
     IPage<Map<String, Object>> queryUserInfos(Page page,
-                                              @Param("userCode") String userCode,
                                               @Param("userName") String userName,
+                                              @Param("roleCode") Integer roleCode,
                                               @Param("onlineStatusCode") Integer onlineStatusCode,
                                               @Param("accountStatusCode") Integer accountStatusCode,
-                                              @Param("insertTime") String insertTime);
+                                              @Param("entryTime") String entryTime);
 
 }

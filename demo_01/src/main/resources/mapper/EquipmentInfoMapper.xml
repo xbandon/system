@@ -29,6 +29,7 @@
 
     <select id="queryEquipmentInfos" resultType="java.util.Map">
         SELECT
+        e.equipmentCode AS keyId,
         e.equipmentName,
         e.equipmentType,
         d.dicValue AS equipmentStatus,
@@ -58,10 +59,7 @@
         <if test="userName!='' and userName != null">
             AND u.userName LIKE concat('%',#{userName},'%')
         </if>
-        <if test="insertTime!='' and insertTime != null">
-            AND e.insertTime = #{insertTime}
-        </if>
-        ORDER BY e.updateTime DESC, e.equipmentType
+        ORDER BY e.updateTime DESC
     </select>
 
     <select id="queryFreeEquipments" resultType="java.util.Map">

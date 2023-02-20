@@ -95,7 +95,6 @@ public class ManagerController {
             String equipmentType = object.getString("equipmentType");
             Integer equipmentStatusCode = object.getInteger("equipmentStatusCode");
             String userName = object.getString("userName");
-            String insertTime = object.getString("insertTime");
 
             if (StringUtils.isEmpty(pageSize) || StringUtils.isEmpty(nextPage)) {
                 resultMap.put("errMsg", "参数错误！");
@@ -103,7 +102,7 @@ public class ManagerController {
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
             IPage<Map<String, Object>> equipmentInfos = equipmentInfoMapper.queryEquipmentInfos(page, equipmentName, equipmentType,
-                    equipmentStatusCode, userName, insertTime);
+                    equipmentStatusCode, userName);
             List<Map<String, Object>> list = equipmentInfos.getRecords();
 
             if (!list.isEmpty()) {
@@ -139,12 +138,11 @@ public class ManagerController {
             //系统时间
             Date sysTime = new Date();
 
-            System.out.println(1/0);
-
             //设备型号重复检查
             Long isExist = equipmentInfoMapper.selectCount(new QueryWrapper<EquipmentInfo>()
                     .eq("equipmentType", equipmentType));
             if (isExist > 0) {
+                resultMap.put("error", false);
                 resultMap.put("errMsg", "您输入的设备型号已存在！");
             } else {
                 //设备信息
@@ -166,7 +164,8 @@ public class ManagerController {
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            resultMap.put("error", "系统异常！");
+            resultMap.put("error", false);
+            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
         }
         return resultMap;
     }
@@ -636,19 +635,19 @@ public class ManagerController {
             JSONObject object = JSON.parseObject(json);
             Integer pageSize = object.getInteger("rows");                          // 每页显示数据量
             Integer nextPage = object.getInteger("page");                          // 页数
-            String userCode = object.getString("userCode");
             String userName = object.getString("userName");
+            Integer roleCode = object.getInteger("roleCode");
             Integer onlineStatusCode = object.getInteger("onlineStatusCode");
             Integer accountStatusCode = object.getInteger("accountStatusCode");
-            String insertTime = object.getString("insertTime");
+            String entryTime = object.getString("entryTime");
 
             if (StringUtils.isEmpty(pageSize) || StringUtils.isEmpty(nextPage)) {
                 resultMap.put("errMsg", "参数错误！");
             }
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
-            IPage<Map<String, Object>> userInfo = userInfoMapper.queryUserInfos(page, userCode, userName, onlineStatusCode,
-                    accountStatusCode, insertTime);
+            IPage<Map<String, Object>> userInfo = userInfoMapper.queryUserInfos(page, userName, roleCode, onlineStatusCode,
+                    accountStatusCode, entryTime);
             List<Map<String, Object>> list = userInfo.getRecords();
 
             if (!list.isEmpty()) {
@@ -697,7 +696,7 @@ public class ManagerController {
                 UserInfo user = new UserInfo();
                 user.setUserName(userName);
                 user.setLoginName(loginName);
-                user.setLoginPassword("12345678");
+                user.setLoginPassword("123456");
                 user.setEmail(email);
                 user.setTelephoneNumber(telephoneNumber);
                 user.setRoleCode(roleCode);

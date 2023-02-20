@@ -6,27 +6,28 @@
         SELECT
         u.userCode,
         u.userName,
+        u.loginName,
         u.email,
         u.telephoneNumber,
-        d1.dicValue AS roleName,
+        d1.dicValue AS role,
         d2.dicValue AS onlineStatus,
         d3.dicValue AS accountStatus,
-        DATE_FORMAT( u.insertTime, '%Y-%m-%d' ) AS insertTime
+        DATE_FORMAT( u.entryTime, '%Y-%m-%d' ) AS entryTime
         FROM
         user_info u
         LEFT JOIN dictionary_info d1 ON d1.dicTypeCode = 0
         AND u.roleCode = d1.dicCode
         LEFT JOIN dictionary_info d2 ON d2.dicTypeCode = 1
         AND u.onlineStatusCode = d2.dicCode
-        LEFT JOIN dictionary_info d3 ON d3.dicTypeCode = 2
+        LEFT JOIN dictionary_info d3 ON d3.dicTypeCode = 6
         AND u.accountStatusCode = d3.dicCode
         WHERE
-        1 = 1
-        <if test="userCode!='' and userCode != null">
-            AND u.userCode LIKE concat('%',#{userCode},'%')
-        </if>
+        (u.roleCode = 1 OR u.roleCode = 2)
         <if test="userName!='' and userName != null">
             AND u.userName LIKE concat('%',#{userName},'%')
+        </if>
+        <if test="roleCode!='' and roleCode != null">
+            AND u.roleCode = #{roleCode}
         </if>
         <if test="onlineStatusCode!='' and onlineStatusCode != null">
             AND u.onlineStatusCode = #{onlineStatusCode}
@@ -34,8 +35,8 @@
         <if test="accountStatusCode!='' and accountStatusCode != null">
             AND u.accountStatusCode = #{accountStatusCode}
         </if>
-        <if test="insertTime!='' and insertTime != null">
-            AND u.insertTime = #{insertTime}
+        <if test="entryTime!='' and entryTime != null">
+            AND u.entryTime = #{entryTime}
         </if>
         ORDER BY u.updateTime DESC
     </select>

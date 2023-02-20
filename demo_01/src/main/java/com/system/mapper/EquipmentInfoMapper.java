@@ -30,7 +30,6 @@ public interface EquipmentInfoMapper extends BaseMapper<EquipmentInfo> {
                                                    @Param("equipmentName") String equipmentName,
                                                    @Param("equipmentType") String equipmentType,
                                                    @Param("equipmentStatusCode") Integer equipmentStatusCode,
-                                                   @Param("userName") String userName,
-                                                   @Param("insertTime") String insertTime);
+                                                   @Param("userName") String userName);
 
 }
