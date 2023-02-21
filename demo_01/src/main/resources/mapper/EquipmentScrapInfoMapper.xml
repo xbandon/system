@@ -8,7 +8,7 @@
         s.equipmentName,
         s.equipmentType,
         u.userName AS scrapUser,
-        DATE_FORMAT( s.scrapTime, '%Y-%m-%d' ) AS scrapTime,
+        DATE_FORMAT( s.scrapTime, '%Y-%m-%d %H:%i:%s' ) AS scrapTime,
         s.scrapLog
         FROM
         equipment_scrap_info s
@@ -23,9 +23,6 @@
         </if>
         <if test="scrapUser!='' and scrapUser != null">
             AND u.userName LIKE concat('%',#{scrapUser},'%')
-        </if>
-        <if test="scrapTime!='' and scrapTime != null">
-            AND s.scrapTime = #{scrapTime}
         </if>
         ORDER BY s.scrapTime DESC
     </select>

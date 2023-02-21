@@ -21,6 +21,5 @@ public interface EquipmentScrapInfoMapper extends BaseMapper<EquipmentScrapInfo>
     IPage<Map<String, Object>> queryScrapInfos(Page page,
                                                @Param("equipmentName") String equipmentName,
                                                @Param("equipmentType") String equipmentType,
-                                               @Param("scrapUser") String scrapUser,
-                                               @Param("scrapTime") String scrapTime);
+                                               @Param("scrapUser") String scrapUser);
 }

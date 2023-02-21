@@ -10,7 +10,7 @@
         a.equipmentName,
         u.userName,
         a.applyReason,
-        DATE_FORMAT( a.applyTime, '%Y-%m-%d' ) AS applyTime
+        DATE_FORMAT( a.applyTime, '%Y-%m-%d %H:%i:%s' ) AS applyTime
         FROM
         equipment_change_info a
         LEFT JOIN user_info u ON a.applyUserCode = u.userCode
@@ -33,11 +33,11 @@
         a.equipmentType,
         u1.userName AS applyUser,
         a.applyReason,
-        DATE_FORMAT( a.applyTime, '%Y-%m-%d' ) AS applyTime,
+        DATE_FORMAT( a.applyTime, '%Y-%m-%d %H:%i:%s' ) AS applyTime,
         u2.userName AS approvalUser,
-        DATE_FORMAT( a.approvalTime, '%Y-%m-%d' ) AS approvalTime,
+        DATE_FORMAT( a.approvalTime, '%Y-%m-%d %H:%i:%s' ) AS approvalTime,
         d.dicValue AS receiveStatus,
-        DATE_FORMAT( a.receiveTime, '%Y-%m-%d' ) AS receiveTime
+        DATE_FORMAT( a.receiveTime, '%Y-%m-%d %H:%i:%s' ) AS receiveTime
         FROM
         equipment_change_info a
         LEFT JOIN user_info u1 ON a.applyUserCode = u1.userCode
@@ -67,14 +67,14 @@
     <select id="queryChangedErrInfos" resultType="java.util.Map">
         SELECT
         a.srcEquipmentName,
-        a.equipmentType,
+        a.srcEquipmentType,
         a.equipmentName,
         u1.userName AS applyUser,
         a.applyReason,
-        DATE_FORMAT( a.applyTime, '%Y-%m-%d' ) AS applyTime,
+        DATE_FORMAT( a.applyTime, '%Y-%m-%d %H:%i:%s' ) AS applyTime,
         u2.userName AS approvalUser,
         a.approvalLog,
-        DATE_FORMAT( a.approvalTime, '%Y-%m-%d' ) AS approvalTime
+        DATE_FORMAT( a.approvalTime, '%Y-%m-%d %H:%i:%s' ) AS approvalTime
         FROM
         equipment_change_info a
         LEFT JOIN user_info u1 ON a.applyUserCode = u1.userCode

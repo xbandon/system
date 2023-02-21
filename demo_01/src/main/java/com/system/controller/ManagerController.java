@@ -472,7 +472,7 @@ public class ManagerController {
                 equipmentApplyInfo.setApprovalLog(approvalLog);
             }
             equipmentApplyInfo.setApprovalTime(sysTime);
-            equipmentApplyInfo.setReceiveStatusCode(0);
+            equipmentApplyInfo.setReceiveStatusCode(1);
 
             EquipmentInfo equipmentInfo = new EquipmentInfo();
             equipmentInfo.setEquipmentType(equipmentType);
@@ -595,7 +595,6 @@ public class ManagerController {
             String equipmentName = object.getString("equipmentName");
             String equipmentType = object.getString("equipmentType");
             String scrapUser = object.getString("scrapUser");
-            String scrapTime = object.getString("scrapTime");
 
             if (StringUtils.isEmpty(pageSize) || StringUtils.isEmpty(nextPage)) {
                 resultMap.put("errMsg", "参数错误！");
@@ -603,7 +602,7 @@ public class ManagerController {
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
             IPage<Map<String, Object>> scrapInfos = equipmentScrapInfoMapper.queryScrapInfos(page, equipmentName, equipmentType,
-                    scrapUser, scrapTime);
+                    scrapUser);
             List<Map<String, Object>> list = scrapInfos.getRecords();
 
             if (!list.isEmpty()) {
@@ -690,7 +689,8 @@ public class ManagerController {
             Long isExist = userInfoMapper.selectCount(new QueryWrapper<UserInfo>()
                     .eq("loginName", loginName));
             if (isExist > 0) {
-                resultMap.put("errMsg", "您输入的登录账户名已存在！");
+                resultMap.put("error", false);
+                resultMap.put("errMsg", "您输入的账户名已存在！");
             } else {
                 //员工信息
                 UserInfo user = new UserInfo();
@@ -700,7 +700,7 @@ public class ManagerController {
                 user.setEmail(email);
                 user.setTelephoneNumber(telephoneNumber);
                 user.setRoleCode(roleCode);
-                user.setOnlineStatusCode(0);
+                user.setOnlineStatusCode(1);
                 user.setAccountStatusCode(0);
                 user.setEntryTime(sysTime);
                 //user.setUpdateUser();
@@ -715,7 +715,8 @@ public class ManagerController {
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            resultMap.put("error", "系统异常！");
+            resultMap.put("error", false);
+            resultMap.put("errMsg", "系统异常！");
         }
         return resultMap;
     }
