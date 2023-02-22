@@ -1,6 +1,7 @@
 package com.system.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -17,10 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/mg")
@@ -162,6 +160,51 @@ public class ManagerController {
             }
 
         } catch (Exception e) {
+            //事务手动回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            resultMap.put("error", false);
+            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
+        }
+        return resultMap;
+    }
+
+    /**
+     * 设备删除
+     */
+    @Transactional
+    @RequestMapping(value = "/deleteEquipmentInfo")
+    public Map<String, Object> deleteEquipmentInfo(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            JSONArray list = object.getJSONArray("list");
+            List<Integer> idList = new ArrayList<>();
+
+            //判断设备是否报废
+            for (Object o : list) {
+                Map map = (Map) o;
+                Integer keyId = (Integer) map.get("keyId");
+                Integer equipmentStatusCode = (Integer) map.get("equipmentStatusCode");
+                if (equipmentStatusCode != 3) {
+                    idList.clear();
+                    resultMap.put("error", false);
+                    resultMap.put("errMsg", "仅报废设备可以删除！");
+                    break;
+                } else {
+                    idList.add(keyId);
+                }
+            }
+
+            if (idList.size() > 0) {
+                for (Integer keyId : idList) {
+                    //设备信息表删除
+                    equipmentInfoMapper.deleteById(keyId);
+                    resultMap.put("success", true);
+                }
+            }
+
+        } catch (
+                Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             resultMap.put("error", false);
@@ -717,6 +760,50 @@ public class ManagerController {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             resultMap.put("error", false);
             resultMap.put("errMsg", "系统异常！");
+        }
+        return resultMap;
+    }
+
+    /**
+     * 删除员工
+     */
+    @Transactional
+    @RequestMapping(value = "/deleteUserInfo")
+    public Map<String, Object> deleteUserInfo(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            JSONArray list = object.getJSONArray("list");
+            List<Integer> idList = new ArrayList<>();
+
+            //判断员工是否离职
+            for (Object o : list) {
+                Map map = (Map) o;
+                Integer userCode = (Integer) map.get("userCode");
+                Integer accountStatusCode = (Integer) map.get("accountStatusCode");
+                if (accountStatusCode != 1) {
+                    idList.clear();
+                    resultMap.put("error", false);
+                    resultMap.put("errMsg", "仅离职员工可以删除！");
+                    break;
+                } else {
+                    idList.add(userCode);
+                }
+            }
+
+            if (idList.size() > 0) {
+                for (Integer userCode : idList) {
+                    //员工信息表删除
+                    userInfoMapper.deleteById(userCode);
+                    resultMap.put("success", true);
+                }
+            }
+
+        } catch (Exception e) {
+            //事务手动回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            resultMap.put("error", false);
+            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
         }
         return resultMap;
     }

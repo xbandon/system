@@ -32,6 +32,7 @@
         e.equipmentCode AS keyId,
         e.equipmentName,
         e.equipmentType,
+        e.equipmentStatusCode,
         d.dicValue AS equipmentStatus,
         u1.userName,
         u2.userName AS insertUser,
