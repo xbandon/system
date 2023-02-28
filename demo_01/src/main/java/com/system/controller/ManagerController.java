@@ -471,9 +471,6 @@ public class ManagerController {
             if (freeNum > 0) {
                 List<Map<String, Object>> list = equipmentInfoMapper.queryFreeEquipments(equipmentName);
                 resultMap.put("list", list);
-                resultMap.put("success", true);
-            } else {
-                resultMap.put("errMsg", "当前暂无空闲设备！");
             }
 
         } catch (Exception e) {
@@ -503,39 +500,50 @@ public class ManagerController {
             Date sysTime = new Date();
 
             if (StringUtils.isEmpty(keyId) || StringUtils.isEmpty(equipmentType) || StringUtils.isEmpty(approvalStatusCode)) {
+                resultMap.put("error", false);
                 resultMap.put("errMsg", "参数错误！");
             }
 
             EquipmentApplyInfo equipmentApplyInfo = new EquipmentApplyInfo();
             equipmentApplyInfo.setKeyId(keyId);
-            equipmentApplyInfo.setEquipmentType(equipmentType);
-            equipmentApplyInfo.setApprovalStatusCode(approvalStatusCode);
-            //equipmentApplyInfo.setApplyUserCode();
-            if (!StringUtils.isEmpty(approvalLog)) {
+
+            if (approvalStatusCode == 1) {
+                //审批通过
+                equipmentApplyInfo.setEquipmentType(equipmentType);
+                equipmentApplyInfo.setApprovalStatusCode(1);
+                //equipmentApplyInfo.setApprovalUserCode();
+                equipmentApplyInfo.setApprovalTime(sysTime);
+                equipmentApplyInfo.setReceiveStatusCode(1);
+
+                EquipmentInfo equipmentInfo = new EquipmentInfo();
+                equipmentInfo.setEquipmentType(equipmentType);
+                equipmentInfo.setEquipmentStatusCode(1);
+                //equipmentInfo.setUpdateUser();
+                equipmentInfo.setUpdateTime(sysTime);
+
+                //设备申请表更新
+                equipmentApplyInfoMapper.updateById(equipmentApplyInfo);
+
+                //设备信息表更新
+                equipmentInfoMapper.update(equipmentInfo, new QueryWrapper<EquipmentInfo>()
+                        .eq("equipmentType", equipmentType));
+            } else {
+                //审批未通过
+                equipmentApplyInfo.setApprovalStatusCode(2);
+                //equipmentApplyInfo.setApprovalUserCode();
                 equipmentApplyInfo.setApprovalLog(approvalLog);
+                equipmentApplyInfo.setApprovalTime(sysTime);
+
+                //设备申请表更新
+                equipmentApplyInfoMapper.updateById(equipmentApplyInfo);
             }
-            equipmentApplyInfo.setApprovalTime(sysTime);
-            equipmentApplyInfo.setReceiveStatusCode(1);
-
-            EquipmentInfo equipmentInfo = new EquipmentInfo();
-            equipmentInfo.setEquipmentType(equipmentType);
-            equipmentInfo.setEquipmentStatusCode(1);
-            //equipmentInfo.setUpdateUser();
-            equipmentInfo.setUpdateTime(sysTime);
-
-            //设备申请表更新
-            equipmentApplyInfoMapper.updateById(equipmentApplyInfo);
-
-            //设备信息表更新
-            equipmentInfoMapper.update(equipmentInfo, new QueryWrapper<EquipmentInfo>()
-                    .eq("equipmentType", equipmentType));
-
             resultMap.put("success", true);
 
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            resultMap.put("error", "系统异常！");
+            resultMap.put("error", false);
+            resultMap.put("errMsg", "系统异常！");
         }
         return resultMap;
     }
@@ -565,58 +573,69 @@ public class ManagerController {
 
             if (StringUtils.isEmpty(keyId) || StringUtils.isEmpty(srcEquipmentName) || StringUtils.isEmpty(srcEquipmentType) ||
                     StringUtils.isEmpty(equipmentType) || StringUtils.isEmpty(applyReason) || StringUtils.isEmpty(approvalStatusCode)) {
+                resultMap.put("error", false);
                 resultMap.put("errMsg", "参数错误！");
             }
 
             EquipmentChangeInfo equipmentChangeInfo = new EquipmentChangeInfo();
             equipmentChangeInfo.setKeyId(keyId);
-            equipmentChangeInfo.setEquipmentType(equipmentType);
-            equipmentChangeInfo.setApprovalStatusCode(approvalStatusCode);
-            //equipmentApplyInfo.setApplyUserCode();
-            if (!StringUtils.isEmpty(approvalLog)) {
+
+            if (approvalStatusCode == 1) {
+                //审批通过
+                equipmentChangeInfo.setEquipmentType(equipmentType);
+                equipmentChangeInfo.setApprovalStatusCode(1);
+                //equipmentChangeInfo.setApprovalUserCode();
+                equipmentChangeInfo.setApprovalTime(sysTime);
+                equipmentChangeInfo.setReceiveStatusCode(1);
+
+                EquipmentInfo srcEquipmentInfo = new EquipmentInfo();
+                srcEquipmentInfo.setEquipmentType(srcEquipmentType);
+                srcEquipmentInfo.setEquipmentStatusCode(3);
+                srcEquipmentInfo.setUserCode(null);
+                //equipmentInfo.setUpdateUser();
+                srcEquipmentInfo.setUpdateTime(sysTime);
+
+                EquipmentInfo equipmentInfo = new EquipmentInfo();
+                equipmentInfo.setEquipmentType(equipmentType);
+                equipmentInfo.setEquipmentStatusCode(1);
+                //equipmentInfo.setUpdateUser();
+                equipmentInfo.setUpdateTime(sysTime);
+
+                EquipmentScrapInfo equipmentScrapInfo = new EquipmentScrapInfo();
+                equipmentScrapInfo.setEquipmentName(srcEquipmentName);
+                equipmentScrapInfo.setEquipmentType(srcEquipmentType);
+                //equipmentScrapInfo.setScrapUserCode();
+                equipmentScrapInfo.setScrapTime(sysTime);
+                equipmentScrapInfo.setScrapLog(applyReason);
+
+                //设备更换表更新
+                equipmentChangeInfoMapper.updateById(equipmentChangeInfo);
+
+                //设备信息表更新
+                equipmentInfoMapper.update(srcEquipmentInfo, new QueryWrapper<EquipmentInfo>()
+                        .eq("equipmentType", srcEquipmentType));
+                equipmentInfoMapper.update(equipmentInfo, new QueryWrapper<EquipmentInfo>()
+                        .eq("equipmentType", equipmentType));
+
+                //设备报废表插入
+                equipmentScrapInfoMapper.insert(equipmentScrapInfo);
+            } else {
+                //审批未通过
+                equipmentChangeInfo.setApprovalStatusCode(2);
+                //equipmentChangeInfo.setApprovalUserCode();
                 equipmentChangeInfo.setApprovalLog(approvalLog);
+                equipmentChangeInfo.setApprovalTime(sysTime);
+
+                //设备更换表更新
+                equipmentChangeInfoMapper.updateById(equipmentChangeInfo);
             }
-            equipmentChangeInfo.setApprovalTime(sysTime);
-            equipmentChangeInfo.setReceiveStatusCode(0);
-
-            EquipmentInfo srcEquipmentInfo = new EquipmentInfo();
-            srcEquipmentInfo.setEquipmentType(srcEquipmentType);
-            srcEquipmentInfo.setEquipmentStatusCode(3);
-            srcEquipmentInfo.setUserCode(null);
-            //equipmentInfo.setUpdateUser();
-            srcEquipmentInfo.setUpdateTime(sysTime);
-
-            EquipmentInfo equipmentInfo = new EquipmentInfo();
-            equipmentInfo.setEquipmentType(equipmentType);
-            equipmentInfo.setEquipmentStatusCode(1);
-            //equipmentInfo.setUpdateUser();
-            equipmentInfo.setUpdateTime(sysTime);
-
-            EquipmentScrapInfo equipmentScrapInfo = new EquipmentScrapInfo();
-            equipmentScrapInfo.setEquipmentName(srcEquipmentName);
-            equipmentScrapInfo.setEquipmentType(srcEquipmentType);
-            //equipmentScrapInfo.setScrapUserCode();
-            equipmentScrapInfo.setScrapTime(sysTime);
-            equipmentScrapInfo.setScrapLog(applyReason);
-
-            //设备更换表更新
-            equipmentChangeInfoMapper.updateById(equipmentChangeInfo);
-
-            //设备信息表更新
-            equipmentInfoMapper.update(srcEquipmentInfo, new QueryWrapper<EquipmentInfo>()
-                    .eq("equipmentType", srcEquipmentType));
-            equipmentInfoMapper.update(equipmentInfo, new QueryWrapper<EquipmentInfo>()
-                    .eq("equipmentType", equipmentType));
-
-            //设备报废表插入
-            equipmentScrapInfoMapper.insert(equipmentScrapInfo);
-
             resultMap.put("success", true);
 
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            resultMap.put("error", "系统异常！");
+            resultMap.put("error", false);
+            resultMap.put("errMsg", "系统异常！");
         }
         return resultMap;
     }
