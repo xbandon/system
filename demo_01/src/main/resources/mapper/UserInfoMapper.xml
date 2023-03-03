@@ -13,7 +13,9 @@
         d2.dicValue AS onlineStatus,
         u.accountStatusCode,
         d3.dicValue AS accountStatus,
-        DATE_FORMAT( u.entryTime, '%Y-%m-%d' ) AS entryTime
+        DATE_FORMAT( u.entryTime, '%Y-%m-%d' ) AS entryTime,
+        u1.userName AS updateUser,
+        DATE_FORMAT( u.updateTime, '%Y-%m-%d %H:%i:%s' ) AS updateTime
         FROM
         user_info u
         LEFT JOIN dictionary_info d1 ON d1.dicTypeCode = 7
@@ -22,8 +24,9 @@
         AND u.onlineStatusCode = d2.dicCode
         LEFT JOIN dictionary_info d3 ON d3.dicTypeCode = 6
         AND u.accountStatusCode = d3.dicCode
+        LEFT JOIN user_info u1 ON u.updateUser = u1.userCode
         WHERE
-        (u.roleCode = 1 OR u.roleCode = 2)
+        1 = 1
         <if test="userName!='' and userName != null">
             AND u.userName LIKE concat('%',#{userName},'%')
         </if>
