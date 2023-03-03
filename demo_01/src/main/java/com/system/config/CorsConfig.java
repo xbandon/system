@@ -14,13 +14,17 @@ public class CorsConfig {
 
     @Bean
     public CorsFilter corsFilter() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // 设置访问源地址
+        configuration.addAllowedOrigin("*");
+        // 设置访问源请求头
+        configuration.addAllowedHeader("*");
+        // 设置访问源请求方法
+        configuration.addAllowedMethod("*");
+        configuration.setMaxAge(MAX_AGE);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("*"); // 1 设置访问源地址
-        corsConfiguration.addAllowedHeader("*"); // 2 设置访问源请求头
-        corsConfiguration.addAllowedMethod("*"); // 3 设置访问源请求方法
-        corsConfiguration.setMaxAge(MAX_AGE);
-        source.registerCorsConfiguration("/**", corsConfiguration); // 4 对接口配置跨域设置
+        // 对接口配置跨域设置
+        source.registerCorsConfiguration("/**", configuration);
         return new CorsFilter(source);
     }
 

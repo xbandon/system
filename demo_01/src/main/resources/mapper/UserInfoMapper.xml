@@ -16,7 +16,7 @@
         DATE_FORMAT( u.entryTime, '%Y-%m-%d' ) AS entryTime
         FROM
         user_info u
-        LEFT JOIN dictionary_info d1 ON d1.dicTypeCode = 0
+        LEFT JOIN dictionary_info d1 ON d1.dicTypeCode = 7
         AND u.roleCode = d1.dicCode
         LEFT JOIN dictionary_info d2 ON d2.dicTypeCode = 1
         AND u.onlineStatusCode = d2.dicCode

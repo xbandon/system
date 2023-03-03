@@ -3,9 +3,7 @@ package com.system.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.segments.MergeSegments;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.system.entity.*;
@@ -37,6 +35,9 @@ public class ManagerController {
 
     @Resource
     EquipmentScrapInfoMapper equipmentScrapInfoMapper;
+
+    @Resource
+    DictionaryInfoMapper dictionaryInfoMapper;
 
     //region ************************************************** 库存管理 **************************************************
 
@@ -826,4 +827,196 @@ public class ManagerController {
         }
         return resultMap;
     }
+
+    //region ************************************************** 字典维护 **************************************************
+
+    /**
+     * 字典查询
+     */
+    @RequestMapping(value = "/queryDictionaryInfos")
+    public Map<String, Object> queryDictionaryInfos(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            Integer pageSize = object.getInteger("rows");       //每页显示数据量
+            Integer nextPage = object.getInteger("page");       //页数
+            Integer dicTypeCode = object.getInteger("dicTypeCode");
+            String dicValue = object.getString("dicValue");
+            String delFlag = object.getString("delFlag");
+
+            if (StringUtils.isEmpty(pageSize) || StringUtils.isEmpty(nextPage)) {
+                resultMap.put("errMsg", "参数错误！");
+            }
+
+            Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
+            IPage<Map<String, Object>> dictionaryInfos = dictionaryInfoMapper.queryDictionaryInfos(page, dicTypeCode, dicValue, delFlag);
+            List<Map<String, Object>> list = dictionaryInfos.getRecords();
+
+            if (!list.isEmpty()) {
+                resultMap.put("total", dictionaryInfos.getTotal());
+                resultMap.put("current", dictionaryInfos.getCurrent());
+                resultMap.put("pages", dictionaryInfos.getPages());
+            }
+
+            resultMap.put("list", list);
+            resultMap.put("success", true);
+
+        } catch (Exception e) {
+            resultMap.put("error", "系统异常！");
+        }
+        return resultMap;
+    }
+
+    /**
+     * 新增字典
+     */
+    @Transactional
+    @RequestMapping(value = "/addDictionaryInfo")
+    public Map<String, Object> addDictionaryInfo(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            Integer dicTypeCode = object.getInteger("dicTypeCode");
+            String dicValue = object.getString("dicValue");
+
+            //获取当前登录人员信息
+
+            //系统时间
+            Date sysTime = new Date();
+
+            //字典重复检查
+            Long isExist = dictionaryInfoMapper.selectCount(new QueryWrapper<DictionaryInfo>()
+                    .eq("dicTypeCode", dicTypeCode)
+                    .eq("dicValue", dicValue));
+            if (isExist > 0) {
+                resultMap.put("error", false);
+                resultMap.put("errMsg", "您输入的字典已存在！");
+            } else {
+                //获取当前字典类型最大字典编码
+                DictionaryInfo dictionaryInfo = dictionaryInfoMapper.selectOne(new QueryWrapper<DictionaryInfo>()
+                        .eq("dicTypeCode", dicTypeCode)
+                        .select("MAX(dicCode) AS dicCode", "dicType"));
+
+                Integer dicCode = 0;
+                if (dictionaryInfo != null) {
+                    dicCode = dictionaryInfo.getDicCode() + 1;
+                }
+                String dicType = dictionaryInfo.getDicType();
+
+                //字典信息
+                DictionaryInfo dictionaryInfo1 = new DictionaryInfo();
+                dictionaryInfo1.setDicType(dicType);
+                dictionaryInfo1.setDicTypeCode(dicTypeCode);
+                dictionaryInfo1.setDicCode(dicCode);
+                dictionaryInfo1.setDicValue(dicValue);
+                dictionaryInfo1.setDelFlag("0");
+                //dictionaryInfo1.setInsertUser();
+                dictionaryInfo1.setInsertTime(sysTime);
+                //dictionaryInfo1.setUpdateUser();
+                dictionaryInfo1.setUpdateTime(sysTime);
+
+                //字典表插入
+                dictionaryInfoMapper.insert(dictionaryInfo1);
+
+                resultMap.put("success", true);
+            }
+
+        } catch (Exception e) {
+            //事务手动回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            resultMap.put("error", false);
+            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
+        }
+        return resultMap;
+    }
+
+    /**
+     * 修改字典
+     */
+    @Transactional
+    @RequestMapping(value = "/editDictionaryInfo")
+    public Map<String, Object> editDictionaryInfo(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            Integer keyId = object.getInteger("keyId");
+            Integer dicTypeCode = object.getInteger("dicTypeCode");
+            String dicValue = object.getString("dicValue");
+
+            //获取当前登录人员信息
+
+            //系统时间
+            Date sysTime = new Date();
+
+            //字典重复检查
+            Long isExist = dictionaryInfoMapper.selectCount(new QueryWrapper<DictionaryInfo>()
+                    .eq("dicTypeCode", dicTypeCode)
+                    .eq("dicValue", dicValue)
+                    .ne("keyId", keyId));
+            if (isExist > 0) {
+                resultMap.put("error", false);
+                resultMap.put("errMsg", "您输入的字典内容已存在！");
+            } else {
+                DictionaryInfo dictionaryInfo = new DictionaryInfo();
+                dictionaryInfo.setKeyId(keyId);
+                dictionaryInfo.setDicValue(dicValue);
+//            dictionaryInfo.setUpdateUser();
+                dictionaryInfo.setUpdateTime(sysTime);
+
+                //字典表更新
+                dictionaryInfoMapper.updateById(dictionaryInfo);
+                resultMap.put("success", true);
+            }
+        } catch (Exception e) {
+            //事务手动回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            resultMap.put("error", false);
+            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
+        }
+        return resultMap;
+    }
+
+    /**
+     * 字典启用/停用
+     */
+    @Transactional
+    @RequestMapping(value = "/editDictionaryDelFlag")
+    public Map<String, Object> editDictionaryDelFlag(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            Integer keyId = object.getInteger("keyId");
+            String delFlag = object.getString("delFlag");
+
+            //获取当前登录人员信息
+
+            //系统时间
+            Date sysTime = new Date();
+
+            if ("0".equals(delFlag) || "1".equals(delFlag)) {
+                DictionaryInfo dictionaryInfo = new DictionaryInfo();
+                dictionaryInfo.setKeyId(keyId);
+                dictionaryInfo.setDelFlag(delFlag);
+//                dictionaryInfo.setUpdateUser();
+                dictionaryInfo.setUpdateTime(sysTime);
+
+                //字典表更新
+                dictionaryInfoMapper.updateById(dictionaryInfo);
+                resultMap.put("success", true);
+            } else {
+                resultMap.put("error", false);
+                resultMap.put("errMsg", "非法参数！");
+            }
+
+        } catch (Exception e) {
+            //事务手动回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            resultMap.put("error", false);
+            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
+        }
+        return resultMap;
+    }
+
+    //endregion
+
 }
