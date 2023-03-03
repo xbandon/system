@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.mapper.DictionaryInfoMapper">
+
+    <select id="queryDictionaryInfos" resultType="java.util.Map">
+        SELECT
+        d.keyId,
+        d.dicType,
+        d.dicTypeCode,
+        d.dicValue,
+        d.delFlag,
+        u.userName AS updateUser,
+        DATE_FORMAT( d.updateTime, '%Y-%m-%d %H:%i:%s' ) AS updateTime
+        FROM
+        dictionary_info d
+        LEFT JOIN user_info u ON d.updateUser = u.userCode
+        WHERE
+        1 = 1
+        <if test="dicTypeCode!='' and dicTypeCode != null">
+            AND d.dicTypeCode = #{dicTypeCode}
+        </if>
+        <if test="dicValue!='' and dicValue != null">
+            AND d.dicValue LIKE concat('%', #{dicValue}, '%')
+        </if>
+        <if test="delFlag!='' and delFlag != null">
+            AND d.delFlag = #{delFlag}
+        </if>
+        ORDER BY
+        d.updateTime DESC
+    </select>
+</mapper>
