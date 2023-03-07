@@ -81,9 +81,9 @@
         WHERE
         userCode = #{userCode}
         <if test="equipmentName!='' and equipmentName != null">
-            AND e.equipmentName LIKE concat('%',#{equipmentName},'%')
+            AND equipmentName LIKE concat('%',#{equipmentName},'%')
         </if>
-        ORDER BY e.updateTime DESC
+        ORDER BY updateTime DESC
     </select>
 
 </mapper>

@@ -87,4 +87,43 @@
         ORDER BY a.approvalTime DESC
     </select>
 
+    <select id="queryApplyRecords" resultType="java.util.Map">
+        SELECT
+        a.keyId,
+        a.equipmentName,
+        a.equipmentType,
+        a.applyReason,
+        DATE_FORMAT( a.applyTime, '%Y-%m-%d %H:%i:%s' ) AS applyTime,
+        a.approvalStatusCode,
+        d1.dicValue AS approvalStatus,
+        u.userName AS approvalUser,
+        a.approvalLog,
+        DATE_FORMAT( a.approvalTime, '%Y-%m-%d %H:%i:%s' ) AS approvalTime,
+        a.receiveStatusCode,
+        d2.dicValue AS receiveStatus,
+        DATE_FORMAT( a.receiveTime, '%Y-%m-%d %H:%i:%s' ) AS receiveTime
+        FROM
+        equipment_apply_info a
+        LEFT JOIN dictionary_info d1 ON d1.dicTypeCode = 4
+        AND a.approvalStatusCode = d1.dicCode
+        LEFT JOIN dictionary_info d2 ON d2.dicTypeCode = 5
+        AND a.receiveStatusCode = d2.dicCode
+        LEFT JOIN user_info u ON a.approvalUserCode = u.userCode
+        WHERE
+        a.applyUserCode = #{userCode}
+        <if test="equipmentName!='' and equipmentName != null">
+            AND a.equipmentName LIKE concat('%',#{equipmentName},'%')
+        </if>
+        <if test="approvalStatusCode!='' and approvalStatusCode != null">
+            AND a.approvalStatusCode = #{approvalStatusCode}
+        </if>
+        <if test="receiveStatusCode!='' and receiveStatusCode != null">
+            AND a.receiveStatusCode = #{receiveStatusCode}
+        </if>
+        ORDER BY
+        a.applyTime DESC,
+        a.approvalStatusCode,
+        a.receiveStatusCode
+    </select>
+
 </mapper>

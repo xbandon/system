@@ -34,4 +34,10 @@ public interface EquipmentApplyInfoMapper extends BaseMapper<EquipmentApplyInfo>
                                                      @Param("approvalUser") String approvalUser,
                                                      @Param("equipmentName") String equipmentName);
 
+
+    IPage<Map<String, Object>> queryApplyRecords(Page page,
+                                                 @Param("equipmentName") String equipmentName,
+                                                 @Param("approvalStatusCode") Integer approvalStatusCode,
+                                                 @Param("receiveStatusCode") Integer receiveStatusCode,
+                                                 @Param("userCode") Integer userCode);
 }

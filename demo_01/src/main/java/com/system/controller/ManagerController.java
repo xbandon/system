@@ -23,19 +23,14 @@ import java.util.*;
 public class ManagerController {
     @Resource
     EquipmentInfoMapper equipmentInfoMapper;
-
     @Resource
     UserInfoMapper userInfoMapper;
-
     @Resource
     EquipmentApplyInfoMapper equipmentApplyInfoMapper;
-
     @Resource
     EquipmentChangeInfoMapper equipmentChangeInfoMapper;
-
     @Resource
     EquipmentScrapInfoMapper equipmentScrapInfoMapper;
-
     @Resource
     DictionaryInfoMapper dictionaryInfoMapper;
 
@@ -544,7 +539,7 @@ public class ManagerController {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             resultMap.put("error", false);
-            resultMap.put("errMsg", "系统异常！");
+            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
         }
         return resultMap;
     }
@@ -636,7 +631,7 @@ public class ManagerController {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             resultMap.put("error", false);
-            resultMap.put("errMsg", "系统异常！");
+            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
         }
         return resultMap;
     }
@@ -779,7 +774,7 @@ public class ManagerController {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             resultMap.put("error", false);
-            resultMap.put("errMsg", "系统异常！");
+            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
         }
         return resultMap;
     }
@@ -862,7 +857,7 @@ public class ManagerController {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             resultMap.put("error", false);
-            resultMap.put("errMsg", "系统异常！");
+            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
         }
         return resultMap;
     }
@@ -900,7 +895,7 @@ public class ManagerController {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             resultMap.put("error", false);
-            resultMap.put("errMsg", "系统异常！");
+            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
         }
         return resultMap;
     }
