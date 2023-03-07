@@ -828,6 +828,85 @@ public class ManagerController {
         return resultMap;
     }
 
+    /**
+     * 员工授权
+     */
+    @Transactional
+    @RequestMapping(value = "/editRole")
+    public Map<String, Object> editRole(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            Integer userCode = object.getInteger("userCode");
+            Integer roleCode = object.getInteger("roleCode");
+
+            //获取当前登录人员信息
+
+
+            //系统时间
+            Date sysTime = new Date();
+
+            //员工信息
+            UserInfo user = new UserInfo();
+            user.setUserCode(userCode);
+            user.setRoleCode(roleCode);
+            //user.setUpdateUser();
+            user.setUpdateTime(sysTime);
+
+            //员工信息表更新
+            userInfoMapper.updateById(user);
+            resultMap.put("success", true);
+
+        } catch (
+                Exception e) {
+            //事务手动回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            resultMap.put("error", false);
+            resultMap.put("errMsg", "系统异常！");
+        }
+        return resultMap;
+    }
+
+    /**
+     * 密码重置
+     */
+    @Transactional
+    @RequestMapping(value = "/resetPassword")
+    public Map<String, Object> resetPassword(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            Integer userCode = object.getInteger("userCode");
+
+            //获取当前登录人员信息
+
+
+            //系统时间
+            Date sysTime = new Date();
+
+            //员工信息
+            UserInfo user = new UserInfo();
+            user.setUserCode(userCode);
+            user.setLoginPassword("123456");
+            //user.setUpdateUser();
+            user.setUpdateTime(sysTime);
+
+            //员工信息表更新
+            userInfoMapper.updateById(user);
+            resultMap.put("success", true);
+
+        } catch (
+                Exception e) {
+            //事务手动回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            resultMap.put("error", false);
+            resultMap.put("errMsg", "系统异常！");
+        }
+        return resultMap;
+    }
+
+    //endregion
+
     //region ************************************************** 字典维护 **************************************************
 
     /**

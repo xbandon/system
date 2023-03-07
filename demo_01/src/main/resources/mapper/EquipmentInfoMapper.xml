@@ -71,4 +71,19 @@
           AND equipmentName = #{equipmentName}
     </select>
 
+    <select id="queryUserEquipments" resultType="java.util.Map">
+        SELECT
+        equipmentCode AS keyId,
+        equipmentName,
+        equipmentType
+        FROM
+        equipment_info
+        WHERE
+        userCode = #{userCode}
+        <if test="equipmentName!='' and equipmentName != null">
+            AND e.equipmentName LIKE concat('%',#{equipmentName},'%')
+        </if>
+        ORDER BY e.updateTime DESC
+    </select>
+
 </mapper>

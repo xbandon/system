@@ -32,4 +32,7 @@ public interface EquipmentInfoMapper extends BaseMapper<EquipmentInfo> {
                                                    @Param("equipmentStatusCode") Integer equipmentStatusCode,
                                                    @Param("userName") String userName);
 
+    IPage<Map<String, Object>> queryUserEquipments(Page page,
+                                                   @Param("equipmentName") String equipmentName,
+                                                   @Param("userCode") Integer userCode);
 }
