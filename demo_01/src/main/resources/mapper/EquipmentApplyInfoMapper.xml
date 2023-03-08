@@ -13,7 +13,7 @@
         equipment_apply_info a
         LEFT JOIN user_info u ON a.applyUserCode = u.userCode
         WHERE
-        a.approvalStatusCode = 0
+        a.approvalStatusCode = 1
         <if test="userName!='' and userName != null">
             AND u.userName LIKE concat('%',#{userName},'%')
         </if>
@@ -41,7 +41,7 @@
         LEFT JOIN dictionary_info d ON d.dicTypeCode = 5
         AND a.receiveStatusCode = d.dicCode
         WHERE
-        a.approvalStatusCode = 1
+        a.approvalStatusCode = 2
         <if test="applyUser!='' and applyUser != null">
             AND u1.userName LIKE concat('%',#{applyUser},'%')
         </if>
@@ -74,7 +74,7 @@
         LEFT JOIN user_info u1 ON a.applyUserCode = u1.userCode
         LEFT JOIN user_info u2 ON a.approvalUserCode = u2.userCode
         WHERE
-        a.approvalStatusCode = 2
+        a.approvalStatusCode = 3
         <if test="applyUser!='' and applyUser != null">
             AND u1.userName LIKE concat('%',#{applyUser},'%')
         </if>

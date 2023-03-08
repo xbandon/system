@@ -124,7 +124,7 @@ public class UserController {
             equipmentApplyInfo.setApplyUserCode(3);
             equipmentApplyInfo.setApplyReason(applyReason);
             equipmentApplyInfo.setApplyTime(sysTime);
-            equipmentApplyInfo.setApprovalStatusCode(0);
+            equipmentApplyInfo.setApprovalStatusCode(1);
 
             //设备申请表插入
             equipmentApplyInfoMapper.insert(equipmentApplyInfo);
@@ -172,7 +172,7 @@ public class UserController {
             equipmentChangeInfo.setApplyUserCode(3);
             equipmentChangeInfo.setApplyReason(applyReason);
             equipmentChangeInfo.setApplyTime(sysTime);
-            equipmentChangeInfo.setApprovalStatusCode(0);
+            equipmentChangeInfo.setApprovalStatusCode(1);
 
             //设备更换表插入
             equipmentChangeInfoMapper.insert(equipmentChangeInfo);
@@ -228,6 +228,62 @@ public class UserController {
 
         } catch (Exception e) {
             resultMap.put("error", "系统异常！");
+        }
+        return resultMap;
+    }
+
+    //endregion
+
+    //region ************************************************** 设备申请记录 **************************************************
+
+    /**
+     * 设备申请接收
+     */
+    @Transactional
+    @RequestMapping(value = "/receiveApplyEquipment")
+    public Map<String, Object> receiveApplyEquipment(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            Integer keyId = object.getInteger("keyId");
+            String equipmentType = object.getString("equipmentType");
+
+            //获取当前登录用户信息
+
+            //系统时间
+            Date sysTime = new Date();
+
+            if (StringUtils.isEmpty(equipmentType)) {
+                resultMap.put("error", false);
+                resultMap.put("errMsg", "参数错误！");
+            }
+
+            //设备申请表
+            EquipmentApplyInfo equipmentApplyInfo = new EquipmentApplyInfo();
+            equipmentApplyInfo.setKeyId(keyId);
+            equipmentApplyInfo.setReceiveStatusCode(2);
+            equipmentApplyInfo.setReceiveTime(sysTime);
+
+            //设备申请表更新
+            equipmentApplyInfoMapper.updateById(equipmentApplyInfo);
+
+            //设备信息
+            EquipmentInfo equipmentInfo = new EquipmentInfo();
+            equipmentInfo.setEquipmentType(equipmentType);
+            equipmentInfo.setEquipmentStatusCode(2);
+            equipmentInfo.setUserCode(3);
+
+            //设备信息表更新
+            equipmentInfoMapper.update(equipmentInfo, new QueryWrapper<EquipmentInfo>()
+                    .eq("equipmentType", equipmentType));
+
+            resultMap.put("success", true);
+
+        } catch (Exception e) {
+            //事务手动回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            resultMap.put("error", false);
+            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
         }
         return resultMap;
     }

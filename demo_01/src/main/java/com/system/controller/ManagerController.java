@@ -463,9 +463,12 @@ public class ManagerController {
                 resultMap.put("errMsg", "参数错误！");
             }
 
-            int freeNum = equipmentInfoMapper.queryEquipmentFreeNum(equipmentName);
-            if (freeNum > 0) {
-                List<Map<String, Object>> list = equipmentInfoMapper.queryFreeEquipments(equipmentName);
+            List<Map<String, Object>> list = equipmentInfoMapper.queryFreeEquipments(equipmentName);
+            if (list.size() > 0) {
+                resultMap.put("success", true);
+                resultMap.put("list", list);
+            } else {
+                resultMap.put("error", false);
                 resultMap.put("list", list);
             }
 
@@ -503,10 +506,10 @@ public class ManagerController {
             EquipmentApplyInfo equipmentApplyInfo = new EquipmentApplyInfo();
             equipmentApplyInfo.setKeyId(keyId);
 
-            if (approvalStatusCode == 1) {
+            if (approvalStatusCode == 2) {
                 //审批通过
                 equipmentApplyInfo.setEquipmentType(equipmentType);
-                equipmentApplyInfo.setApprovalStatusCode(1);
+                equipmentApplyInfo.setApprovalStatusCode(2);
                 //equipmentApplyInfo.setApprovalUserCode();
                 equipmentApplyInfo.setApprovalTime(sysTime);
                 equipmentApplyInfo.setReceiveStatusCode(1);
@@ -525,7 +528,7 @@ public class ManagerController {
                         .eq("equipmentType", equipmentType));
             } else {
                 //审批未通过
-                equipmentApplyInfo.setApprovalStatusCode(2);
+                equipmentApplyInfo.setApprovalStatusCode(3);
                 //equipmentApplyInfo.setApprovalUserCode();
                 equipmentApplyInfo.setApprovalLog(approvalLog);
                 equipmentApplyInfo.setApprovalTime(sysTime);
@@ -576,10 +579,10 @@ public class ManagerController {
             EquipmentChangeInfo equipmentChangeInfo = new EquipmentChangeInfo();
             equipmentChangeInfo.setKeyId(keyId);
 
-            if (approvalStatusCode == 1) {
+            if (approvalStatusCode == 2) {
                 //审批通过
                 equipmentChangeInfo.setEquipmentType(equipmentType);
-                equipmentChangeInfo.setApprovalStatusCode(1);
+                equipmentChangeInfo.setApprovalStatusCode(2);
                 //equipmentChangeInfo.setApprovalUserCode();
                 equipmentChangeInfo.setApprovalTime(sysTime);
                 equipmentChangeInfo.setReceiveStatusCode(1);
@@ -617,7 +620,7 @@ public class ManagerController {
                 equipmentScrapInfoMapper.insert(equipmentScrapInfo);
             } else {
                 //审批未通过
-                equipmentChangeInfo.setApprovalStatusCode(2);
+                equipmentChangeInfo.setApprovalStatusCode(3);
                 //equipmentChangeInfo.setApprovalUserCode();
                 equipmentChangeInfo.setApprovalLog(approvalLog);
                 equipmentChangeInfo.setApprovalTime(sysTime);

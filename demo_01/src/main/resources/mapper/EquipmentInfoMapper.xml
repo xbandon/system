@@ -20,13 +20,6 @@
         GROUP BY equipmentName
     </select>
 
-    <select id="queryEquipmentFreeNum" resultType="java.lang.Integer">
-        SELECT SUM(CASE WHEN equipmentStatusCode = 0 THEN 1 ELSE 0 END)
-        FROM equipment_info
-        WHERE equipmentName = #{equipmentName}
-        GROUP BY equipmentName
-    </select>
-
     <select id="queryEquipmentInfos" resultType="java.util.Map">
         SELECT
         e.equipmentCode AS keyId,
