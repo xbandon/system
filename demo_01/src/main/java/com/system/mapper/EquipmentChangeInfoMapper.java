@@ -33,4 +33,10 @@ public interface EquipmentChangeInfoMapper extends BaseMapper<EquipmentChangeInf
                                                     @Param("applyUser") String applyUser,
                                                     @Param("approvalUser") String approvalUser,
                                                     @Param("equipmentName") String equipmentName);
+
+    IPage<Map<String, Object>> queryChangeRecords(Page page,
+                                                  @Param("equipmentName") String equipmentName,
+                                                  @Param("approvalStatusCode") Integer approvalStatusCode,
+                                                  @Param("receiveStatusCode") Integer receiveStatusCode,
+                                                  @Param("userCode") Integer userCode);
 }

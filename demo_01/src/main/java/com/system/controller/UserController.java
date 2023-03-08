@@ -234,7 +234,51 @@ public class UserController {
 
     //endregion
 
-    //region ************************************************** 设备申请记录 **************************************************
+    //region ************************************************** 设备更换记录 **************************************************
+
+    /**
+     * 设备更换记录
+     */
+    @RequestMapping(value = "/queryChangeRecords")
+    public Map<String, Object> queryChangeRecords(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            Integer pageSize = object.getInteger("rows");                          // 每页显示数据量
+            Integer nextPage = object.getInteger("page");                          // 页数
+            String equipmentName = object.getString("equipmentName");
+            Integer approvalStatusCode = object.getInteger("approvalStatusCode");
+            Integer receiveStatusCode = object.getInteger("receiveStatusCode");
+
+            //获取当前登录用户信息
+            Integer userCode = object.getInteger("userCode");
+
+            if (StringUtils.isEmpty(pageSize) || StringUtils.isEmpty(nextPage)) {
+                resultMap.put("errMsg", "参数错误！");
+            }
+
+            Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
+            IPage<Map<String, Object>> changeRecords = equipmentChangeInfoMapper.queryChangeRecords(page, equipmentName, approvalStatusCode, receiveStatusCode, userCode);
+            List<Map<String, Object>> list = changeRecords.getRecords();
+
+            if (!list.isEmpty()) {
+                resultMap.put("total", changeRecords.getTotal());
+                resultMap.put("current", changeRecords.getCurrent());
+                resultMap.put("pages", changeRecords.getPages());
+            }
+
+            resultMap.put("list", list);
+            resultMap.put("success", true);
+
+        } catch (Exception e) {
+            resultMap.put("error", "系统异常！");
+        }
+        return resultMap;
+    }
+
+    //endregion
+
+    //region ************************************************** 设备接收 **************************************************
 
     /**
      * 设备申请接收
@@ -266,6 +310,58 @@ public class UserController {
 
             //设备申请表更新
             equipmentApplyInfoMapper.updateById(equipmentApplyInfo);
+
+            //设备信息
+            EquipmentInfo equipmentInfo = new EquipmentInfo();
+            equipmentInfo.setEquipmentType(equipmentType);
+            equipmentInfo.setEquipmentStatusCode(2);
+            equipmentInfo.setUserCode(3);
+
+            //设备信息表更新
+            equipmentInfoMapper.update(equipmentInfo, new QueryWrapper<EquipmentInfo>()
+                    .eq("equipmentType", equipmentType));
+
+            resultMap.put("success", true);
+
+        } catch (Exception e) {
+            //事务手动回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            resultMap.put("error", false);
+            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
+        }
+        return resultMap;
+    }
+
+    /**
+     * 设备更换接收
+     */
+    @Transactional
+    @RequestMapping(value = "/receiveChangeEquipment")
+    public Map<String, Object> receiveChangeEquipment(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            Integer keyId = object.getInteger("keyId");
+            String equipmentType = object.getString("equipmentType");
+
+            //获取当前登录用户信息
+
+            //系统时间
+            Date sysTime = new Date();
+
+            if (StringUtils.isEmpty(equipmentType)) {
+                resultMap.put("error", false);
+                resultMap.put("errMsg", "参数错误！");
+            }
+
+            //设备申请表
+            EquipmentChangeInfo equipmentChangeInfo = new EquipmentChangeInfo();
+            equipmentChangeInfo.setKeyId(keyId);
+            equipmentChangeInfo.setReceiveStatusCode(2);
+            equipmentChangeInfo.setReceiveTime(sysTime);
+
+            //设备申请表更新
+            equipmentChangeInfoMapper.updateById(equipmentChangeInfo);
 
             //设备信息
             EquipmentInfo equipmentInfo = new EquipmentInfo();
