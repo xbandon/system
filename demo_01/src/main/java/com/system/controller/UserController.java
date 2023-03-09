@@ -232,54 +232,6 @@ public class UserController {
         return resultMap;
     }
 
-    //endregion
-
-    //region ************************************************** 设备更换记录 **************************************************
-
-    /**
-     * 设备更换记录
-     */
-    @RequestMapping(value = "/queryChangeRecords")
-    public Map<String, Object> queryChangeRecords(@RequestBody String json) {
-        Map<String, Object> resultMap = new HashMap<>();
-        try {
-            JSONObject object = JSON.parseObject(json);
-            Integer pageSize = object.getInteger("rows");                          // 每页显示数据量
-            Integer nextPage = object.getInteger("page");                          // 页数
-            String equipmentName = object.getString("equipmentName");
-            Integer approvalStatusCode = object.getInteger("approvalStatusCode");
-            Integer receiveStatusCode = object.getInteger("receiveStatusCode");
-
-            //获取当前登录用户信息
-            Integer userCode = object.getInteger("userCode");
-
-            if (StringUtils.isEmpty(pageSize) || StringUtils.isEmpty(nextPage)) {
-                resultMap.put("errMsg", "参数错误！");
-            }
-
-            Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
-            IPage<Map<String, Object>> changeRecords = equipmentChangeInfoMapper.queryChangeRecords(page, equipmentName, approvalStatusCode, receiveStatusCode, userCode);
-            List<Map<String, Object>> list = changeRecords.getRecords();
-
-            if (!list.isEmpty()) {
-                resultMap.put("total", changeRecords.getTotal());
-                resultMap.put("current", changeRecords.getCurrent());
-                resultMap.put("pages", changeRecords.getPages());
-            }
-
-            resultMap.put("list", list);
-            resultMap.put("success", true);
-
-        } catch (Exception e) {
-            resultMap.put("error", "系统异常！");
-        }
-        return resultMap;
-    }
-
-    //endregion
-
-    //region ************************************************** 设备接收 **************************************************
-
     /**
      * 设备申请接收
      */
@@ -328,6 +280,50 @@ public class UserController {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             resultMap.put("error", false);
             resultMap.put("errMsg", "系统繁忙，请稍后再试！");
+        }
+        return resultMap;
+    }
+
+    //endregion
+
+    //region ************************************************** 设备更换记录 **************************************************
+
+    /**
+     * 设备更换记录
+     */
+    @RequestMapping(value = "/queryChangeRecords")
+    public Map<String, Object> queryChangeRecords(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            Integer pageSize = object.getInteger("rows");                          // 每页显示数据量
+            Integer nextPage = object.getInteger("page");                          // 页数
+            String equipmentName = object.getString("equipmentName");
+            Integer approvalStatusCode = object.getInteger("approvalStatusCode");
+            Integer receiveStatusCode = object.getInteger("receiveStatusCode");
+
+            //获取当前登录用户信息
+            Integer userCode = object.getInteger("userCode");
+
+            if (StringUtils.isEmpty(pageSize) || StringUtils.isEmpty(nextPage)) {
+                resultMap.put("errMsg", "参数错误！");
+            }
+
+            Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
+            IPage<Map<String, Object>> changeRecords = equipmentChangeInfoMapper.queryChangeRecords(page, equipmentName, approvalStatusCode, receiveStatusCode, userCode);
+            List<Map<String, Object>> list = changeRecords.getRecords();
+
+            if (!list.isEmpty()) {
+                resultMap.put("total", changeRecords.getTotal());
+                resultMap.put("current", changeRecords.getCurrent());
+                resultMap.put("pages", changeRecords.getPages());
+            }
+
+            resultMap.put("list", list);
+            resultMap.put("success", true);
+
+        } catch (Exception e) {
+            resultMap.put("error", "系统异常！");
         }
         return resultMap;
     }
