@@ -683,7 +683,7 @@ public class ManagerController {
 
     //endregion
 
-    //region ************************************************** 员工查看 **************************************************
+    //region ************************************************** 员工管理 **************************************************
 
     /**
      * 员工查看
@@ -848,6 +848,45 @@ public class ManagerController {
             UserInfo user = new UserInfo();
             user.setUserCode(userCode);
             user.setRoleCode(roleCode);
+            //user.setUpdateUser();
+            user.setUpdateTime(sysTime);
+
+            //员工信息表更新
+            userInfoMapper.updateById(user);
+            resultMap.put("success", true);
+
+        } catch (
+                Exception e) {
+            //事务手动回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            resultMap.put("error", false);
+            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
+        }
+        return resultMap;
+    }
+
+    /**
+     * 员工离职
+     */
+    @Transactional
+    @RequestMapping(value = "/quitUser")
+    public Map<String, Object> quitUser(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            Integer userCode = object.getInteger("userCode");
+
+            //获取当前登录人员信息
+
+
+            //系统时间
+            Date sysTime = new Date();
+
+            //员工信息
+            UserInfo user = new UserInfo();
+            user.setUserCode(userCode);
+            user.setAccountStatusCode(1);
+            user.setQuitTime(sysTime);
             //user.setUpdateUser();
             user.setUpdateTime(sysTime);
 

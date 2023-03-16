@@ -8,9 +8,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.system.entity.EquipmentApplyInfo;
 import com.system.entity.EquipmentChangeInfo;
 import com.system.entity.EquipmentInfo;
+import com.system.entity.UserInfo;
 import com.system.mapper.EquipmentApplyInfoMapper;
 import com.system.mapper.EquipmentChangeInfoMapper;
 import com.system.mapper.EquipmentInfoMapper;
+import com.system.mapper.UserInfoMapper;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.StringUtils;
@@ -33,6 +35,8 @@ public class UserController {
     EquipmentApplyInfoMapper equipmentApplyInfoMapper;
     @Resource
     EquipmentChangeInfoMapper equipmentChangeInfoMapper;
+    @Resource
+    UserInfoMapper userInfoMapper;
 
     //region ************************************************** 设备查看 **************************************************
 
@@ -368,6 +372,90 @@ public class UserController {
             //设备信息表更新
             equipmentInfoMapper.update(equipmentInfo, new QueryWrapper<EquipmentInfo>()
                     .eq("equipmentType", equipmentType));
+
+            resultMap.put("success", true);
+
+        } catch (Exception e) {
+            //事务手动回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            resultMap.put("error", false);
+            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
+        }
+        return resultMap;
+    }
+
+    //endregion
+
+    //region ************************************************** 个人中心 **************************************************
+
+    /**
+     * 修改个人信息
+     */
+    @Transactional
+    @RequestMapping(value = "/editUserInfo")
+    public Map<String, Object> editUserInfo(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            String userName = object.getString("userName");
+            String loginName = object.getString("loginName");
+            String email = object.getString("email");
+            String telephoneNumber = object.getString("telephoneNumber");
+
+            //获取当前登录用户信息
+            Integer userCode = object.getInteger("userCode");
+
+            //系统时间
+            Date sysTime = new Date();
+
+            //个人信息
+            UserInfo userInfo = new UserInfo();
+            userInfo.setUserCode(userCode);
+            userInfo.setUserName(userName);
+            userInfo.setLoginName(loginName);
+            userInfo.setEmail(email);
+            userInfo.setTelephoneNumber(telephoneNumber);
+            userInfo.setUpdateUser(userCode);
+            userInfo.setUpdateTime(sysTime);
+
+            //员工信息表更新
+            userInfoMapper.updateById(userInfo);
+
+            resultMap.put("success", true);
+
+        } catch (Exception e) {
+            //事务手动回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            resultMap.put("error", false);
+            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
+        }
+        return resultMap;
+    }
+
+    /**
+     * 修改密码
+     */
+    @Transactional
+    @RequestMapping(value = "/editPassword")
+    public Map<String, Object> editPassword(@RequestBody String json) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            JSONObject object = JSON.parseObject(json);
+            String newPass = object.getString("newPass");
+
+            //获取当前登录用户信息
+            Integer userCode = object.getInteger("userCode");
+
+            //系统时间
+            Date sysTime = new Date();
+
+            //个人信息
+            UserInfo userInfo = new UserInfo();
+            userInfo.setUserCode(userCode);
+            userInfo.setLoginPassword(newPass);
+
+            //员工信息表更新
+            userInfoMapper.updateById(userInfo);
 
             resultMap.put("success", true);
 

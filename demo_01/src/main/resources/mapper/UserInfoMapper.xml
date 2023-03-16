@@ -14,6 +14,7 @@
         u.accountStatusCode,
         d3.dicValue AS accountStatus,
         DATE_FORMAT( u.entryTime, '%Y-%m-%d' ) AS entryTime,
+        DATE_FORMAT( u.quitTime, '%Y-%m-%d' ) AS quitTime,
         u1.userName AS updateUser,
         DATE_FORMAT( u.updateTime, '%Y-%m-%d %H:%i:%s' ) AS updateTime
         FROM
