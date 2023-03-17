@@ -15,6 +15,7 @@ import com.system.mapper.EquipmentInfoMapper;
 import com.system.mapper.UserInfoMapper;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -441,6 +442,7 @@ public class UserController {
         Map<String, Object> resultMap = new HashMap<>();
         try {
             JSONObject object = JSON.parseObject(json);
+            String srcPass = object.getString("srcPass");
             String newPass = object.getString("newPass");
 
             //获取当前登录用户信息
@@ -449,15 +451,24 @@ public class UserController {
             //系统时间
             Date sysTime = new Date();
 
-            //个人信息
-            UserInfo userInfo = new UserInfo();
-            userInfo.setUserCode(userCode);
-            userInfo.setLoginPassword(newPass);
+            //原密码校验
+            Long flg = userInfoMapper.selectCount(new QueryWrapper<UserInfo>()
+                    .eq("loginPassword", DigestUtils.md5DigestAsHex(srcPass.getBytes()))
+                    .eq("userCode", userCode));
+            if (flg == 0) {
+                resultMap.put("error", false);
+                resultMap.put("errMsg", "原密码错误！");
+            } else {
+                //个人信息
+                UserInfo userInfo = new UserInfo();
+                userInfo.setUserCode(userCode);
+                userInfo.setLoginPassword(DigestUtils.md5DigestAsHex(newPass.getBytes()));
 
-            //员工信息表更新
-            userInfoMapper.updateById(userInfo);
+                //员工信息表更新
+                userInfoMapper.updateById(userInfo);
 
-            resultMap.put("success", true);
+                resultMap.put("success", true);
+            }
 
         } catch (Exception e) {
             //事务手动回滚

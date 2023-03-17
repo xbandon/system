@@ -10,6 +10,7 @@ import com.system.entity.*;
 import com.system.mapper.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -757,7 +758,7 @@ public class ManagerController {
                 UserInfo user = new UserInfo();
                 user.setUserName(userName);
                 user.setLoginName(loginName);
-                user.setLoginPassword("123456");
+                user.setLoginPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
                 user.setEmail(email);
                 user.setTelephoneNumber(telephoneNumber);
                 user.setRoleCode(roleCode);
@@ -924,7 +925,7 @@ public class ManagerController {
             //员工信息
             UserInfo user = new UserInfo();
             user.setUserCode(userCode);
-            user.setLoginPassword("123456");
+            user.setLoginPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
             //user.setUpdateUser();
             user.setUpdateTime(sysTime);
 
