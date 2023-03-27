@@ -10,7 +10,6 @@
         u.email,
         u.telephoneNumber,
         d1.dicValue AS role,
-        d2.dicValue AS onlineStatus,
         u.accountStatusCode,
         d3.dicValue AS accountStatus,
         DATE_FORMAT( u.entryTime, '%Y-%m-%d' ) AS entryTime,
@@ -33,9 +32,6 @@
         </if>
         <if test="roleCode!='' and roleCode != null">
             AND u.roleCode = #{roleCode}
-        </if>
-        <if test="onlineStatusCode!='' and onlineStatusCode != null">
-            AND u.onlineStatusCode = #{onlineStatusCode}
         </if>
         <if test="accountStatusCode!='' and accountStatusCode != null">
             AND u.accountStatusCode = #{accountStatusCode}

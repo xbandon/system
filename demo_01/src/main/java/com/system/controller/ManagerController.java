@@ -10,7 +10,6 @@ import com.system.entity.*;
 import com.system.mapper.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -698,7 +697,6 @@ public class ManagerController {
             Integer nextPage = object.getInteger("page");                          // 页数
             String userName = object.getString("userName");
             Integer roleCode = object.getInteger("roleCode");
-            Integer onlineStatusCode = object.getInteger("onlineStatusCode");
             Integer accountStatusCode = object.getInteger("accountStatusCode");
             String entryTime = object.getString("entryTime");
 
@@ -707,8 +705,7 @@ public class ManagerController {
             }
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
-            IPage<Map<String, Object>> userInfo = userInfoMapper.queryUserInfos(page, userName, roleCode, onlineStatusCode,
-                    accountStatusCode, entryTime);
+            IPage<Map<String, Object>> userInfo = userInfoMapper.queryUserInfos(page, userName, roleCode, accountStatusCode, entryTime);
             List<Map<String, Object>> list = userInfo.getRecords();
 
             if (!list.isEmpty()) {
@@ -758,11 +755,10 @@ public class ManagerController {
                 UserInfo user = new UserInfo();
                 user.setUserName(userName);
                 user.setLoginName(loginName);
-                user.setLoginPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+                user.setLoginPassword("123456");
                 user.setEmail(email);
                 user.setTelephoneNumber(telephoneNumber);
                 user.setRoleCode(roleCode);
-                user.setOnlineStatusCode(1);
                 user.setAccountStatusCode(0);
                 user.setEntryTime(sysTime);
                 //user.setUpdateUser();
@@ -925,7 +921,7 @@ public class ManagerController {
             //员工信息
             UserInfo user = new UserInfo();
             user.setUserCode(userCode);
-            user.setLoginPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+            user.setLoginPassword("123456");
             //user.setUpdateUser();
             user.setUpdateTime(sysTime);
 

@@ -15,7 +15,6 @@ import com.system.mapper.EquipmentInfoMapper;
 import com.system.mapper.UserInfoMapper;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -453,7 +452,7 @@ public class UserController {
 
             //原密码校验
             Long flg = userInfoMapper.selectCount(new QueryWrapper<UserInfo>()
-                    .eq("loginPassword", DigestUtils.md5DigestAsHex(srcPass.getBytes()))
+                    .eq("loginPassword", srcPass)
                     .eq("userCode", userCode));
             if (flg == 0) {
                 resultMap.put("error", false);
@@ -462,7 +461,7 @@ public class UserController {
                 //个人信息
                 UserInfo userInfo = new UserInfo();
                 userInfo.setUserCode(userCode);
-                userInfo.setLoginPassword(DigestUtils.md5DigestAsHex(newPass.getBytes()));
+                userInfo.setLoginPassword(newPass);
 
                 //员工信息表更新
                 userInfoMapper.updateById(userInfo);
