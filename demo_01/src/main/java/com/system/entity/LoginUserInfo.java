@@ -12,5 +12,4 @@ public class LoginUserInfo {
     private String telephoneNumber;
     private Integer roleCode;
     private String token;
-
 }

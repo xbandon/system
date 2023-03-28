@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.generator.config.OutputFile;
 
 import java.util.Collections;
 
-public class Generator {
+public class GeneratorConfig {
     public static void main(String[] args) {
         FastAutoGenerator.create("jdbc:mysql://localhost:3306/test", "root", "root")
                 //全局配置

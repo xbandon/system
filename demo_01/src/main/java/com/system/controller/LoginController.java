@@ -1,9 +1,10 @@
 package com.system.controller;
 
 import cn.hutool.core.util.StrUtil;
+import com.system.constant.ResponseConstant;
 import com.system.entity.LoginUserInfo;
 import com.system.service.UserInfoService;
-import org.springframework.transaction.annotation.Transactional;
+import com.system.wrapper.Wrapper;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,33 +19,28 @@ public class LoginController {
     @Resource
     UserInfoService userInfoService;
 
-    @Transactional
     @RequestMapping("/login")
-    public Map<String, Object> login(@RequestBody LoginUserInfo loginUserInfo) {
+    public Wrapper login(@RequestBody LoginUserInfo loginUserInfo) {
         Map<String, Object> resultMap = new HashMap<>();
         try {
             String loginName = loginUserInfo.getLoginName();
             String loginPassword = loginUserInfo.getLoginPassword();
 
             if (StrUtil.isEmpty(loginName) || StrUtil.isEmpty(loginPassword)) {
-                resultMap.put("error", false);
-                resultMap.put("errMsg", "参数错误！");
+                return Wrapper.info(ResponseConstant.ERROR_CODE, "参数错误");
             }
 
             LoginUserInfo userInfo = userInfoService.login(loginUserInfo);
             if (userInfo != null) {
-                resultMap.put("user", userInfo);
-                resultMap.put("success", true);
+                resultMap.put("data", userInfo);
             } else {
-                resultMap.put("error", false);
-                resultMap.put("errMsg", "账户名与密码不匹配！");
+                return Wrapper.info(ResponseConstant.ERROR_CODE, "账户名与密码不匹配");
             }
 
         } catch (Exception e) {
-            resultMap.put("error", false);
-            resultMap.put("errMsg", "系统异常！");
+            return Wrapper.error();
         }
-        return resultMap;
+        return Wrapper.success(resultMap);
     }
 
 }

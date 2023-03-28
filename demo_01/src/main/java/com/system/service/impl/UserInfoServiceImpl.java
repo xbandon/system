@@ -28,17 +28,16 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Override
     public LoginUserInfo login(LoginUserInfo loginUserInfo) {
         // 登录
-        UserInfo user = userInfoMapper.selectOne(new QueryWrapper<UserInfo>()
+        UserInfo userInfo = userInfoMapper.selectOne(new QueryWrapper<UserInfo>()
                 .eq("loginName", loginUserInfo.getLoginName())
                 .eq("loginPassword", loginUserInfo.getLoginPassword()));
-        if (user != null) {
-            BeanUtil.copyProperties(user, loginUserInfo, true);
+        if (userInfo != null) {
+            BeanUtil.copyProperties(userInfo, loginUserInfo, true);
             // 设置token
-            String token = JwtTokenUtils.getToken(user.getUserCode().toString(), user.getLoginPassword());
+            String token = JwtTokenUtils.getToken(loginUserInfo.getUserCode().toString(), loginUserInfo.getLoginPassword());
             loginUserInfo.setToken(token);
             return loginUserInfo;
         }
-
         return null;
     }
 }

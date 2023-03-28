@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.system.constant.ResponseConstant;
 import com.system.entity.EquipmentApplyInfo;
 import com.system.entity.EquipmentChangeInfo;
 import com.system.entity.EquipmentInfo;
@@ -13,6 +14,7 @@ import com.system.mapper.EquipmentApplyInfoMapper;
 import com.system.mapper.EquipmentChangeInfoMapper;
 import com.system.mapper.EquipmentInfoMapper;
 import com.system.mapper.UserInfoMapper;
+import com.system.wrapper.Wrapper;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.StringUtils;
@@ -44,7 +46,7 @@ public class UserController {
      * 设备查看
      */
     @RequestMapping(value = "/queryUserEquipments")
-    public Map<String, Object> queryUserEquipments(@RequestBody String json) {
+    public Wrapper queryUserEquipments(@RequestBody String json) {
         Map<String, Object> resultMap = new HashMap<>();
         try {
             JSONObject object = JSON.parseObject(json);
@@ -56,7 +58,7 @@ public class UserController {
             Integer userCode = object.getInteger("userCode");
 
             if (StringUtils.isEmpty(pageSize) || StringUtils.isEmpty(nextPage)) {
-                resultMap.put("errMsg", "参数错误！");
+                return Wrapper.info(ResponseConstant.ERROR_CODE, "参数错误");
             }
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
@@ -70,19 +72,18 @@ public class UserController {
             }
 
             resultMap.put("list", list);
-            resultMap.put("success", true);
 
         } catch (Exception e) {
-            resultMap.put("error", "系统异常！");
+
         }
-        return resultMap;
+        return Wrapper.success(resultMap);
     }
 
     /**
      * 设备名称
      */
     @RequestMapping(value = "/queryEquipmentName")
-    public Map<String, Object> queryEquipmentName() {
+    public Wrapper queryEquipmentName() {
         Map<String, Object> resultMap = new HashMap<>();
         try {
             List<EquipmentInfo> list = equipmentInfoMapper.selectList(new QueryWrapper<EquipmentInfo>()
@@ -91,13 +92,12 @@ public class UserController {
 
             if (!list.isEmpty()) {
                 resultMap.put("list", list);
-                resultMap.put("success", true);
             }
 
         } catch (Exception e) {
-            resultMap.put("error", "系统异常！");
+
         }
-        return resultMap;
+        return Wrapper.success(resultMap);
     }
 
     /**
@@ -105,8 +105,7 @@ public class UserController {
      */
     @Transactional
     @RequestMapping(value = "/applyEquipment")
-    public Map<String, Object> applyEquipment(@RequestBody String json) {
-        Map<String, Object> resultMap = new HashMap<>();
+    public Wrapper applyEquipment(@RequestBody String json) {
         try {
             JSONObject object = JSON.parseObject(json);
             String equipmentName = object.getString("equipmentName");
@@ -119,8 +118,7 @@ public class UserController {
             Date sysTime = new Date();
 
             if (StringUtils.isEmpty(equipmentName) || StringUtils.isEmpty(applyReason)) {
-                resultMap.put("error", false);
-                resultMap.put("errMsg", "参数错误！");
+                return Wrapper.info(ResponseConstant.ERROR_CODE, "参数错误");
             }
 
             EquipmentApplyInfo equipmentApplyInfo = new EquipmentApplyInfo();
@@ -133,15 +131,12 @@ public class UserController {
             //设备申请表插入
             equipmentApplyInfoMapper.insert(equipmentApplyInfo);
 
-            resultMap.put("success", true);
-
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            resultMap.put("error", false);
-            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
+            return Wrapper.error();
         }
-        return resultMap;
+        return Wrapper.success();
     }
 
     /**
@@ -149,8 +144,7 @@ public class UserController {
      */
     @Transactional
     @RequestMapping(value = "/changeEquipment")
-    public Map<String, Object> changeEquipment(@RequestBody String json) {
-        Map<String, Object> resultMap = new HashMap<>();
+    public Wrapper changeEquipment(@RequestBody String json) {
         try {
             JSONObject object = JSON.parseObject(json);
             String srcEquipmentName = object.getString("srcEquipmentName");
@@ -165,8 +159,7 @@ public class UserController {
             Date sysTime = new Date();
 
             if (StringUtils.isEmpty(srcEquipmentName) || StringUtils.isEmpty(srcEquipmentType) || StringUtils.isEmpty(equipmentName) || StringUtils.isEmpty(applyReason)) {
-                resultMap.put("error", false);
-                resultMap.put("errMsg", "参数错误！");
+                return Wrapper.info(ResponseConstant.ERROR_CODE, "参数错误");
             }
 
             EquipmentChangeInfo equipmentChangeInfo = new EquipmentChangeInfo();
@@ -181,15 +174,12 @@ public class UserController {
             //设备更换表插入
             equipmentChangeInfoMapper.insert(equipmentChangeInfo);
 
-            resultMap.put("success", true);
-
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            resultMap.put("error", false);
-            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
+            return Wrapper.error();
         }
-        return resultMap;
+        return Wrapper.success();
     }
 
     //endregion
@@ -200,7 +190,7 @@ public class UserController {
      * 设备申请记录
      */
     @RequestMapping(value = "/queryApplyRecords")
-    public Map<String, Object> queryApplyRecords(@RequestBody String json) {
+    public Wrapper queryApplyRecords(@RequestBody String json) {
         Map<String, Object> resultMap = new HashMap<>();
         try {
             JSONObject object = JSON.parseObject(json);
@@ -214,7 +204,7 @@ public class UserController {
             Integer userCode = object.getInteger("userCode");
 
             if (StringUtils.isEmpty(pageSize) || StringUtils.isEmpty(nextPage)) {
-                resultMap.put("errMsg", "参数错误！");
+                return Wrapper.info(ResponseConstant.ERROR_CODE, "参数错误");
             }
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
@@ -228,12 +218,11 @@ public class UserController {
             }
 
             resultMap.put("list", list);
-            resultMap.put("success", true);
 
         } catch (Exception e) {
-            resultMap.put("error", "系统异常！");
+
         }
-        return resultMap;
+        return Wrapper.success(resultMap);
     }
 
     /**
@@ -241,8 +230,7 @@ public class UserController {
      */
     @Transactional
     @RequestMapping(value = "/receiveApplyEquipment")
-    public Map<String, Object> receiveApplyEquipment(@RequestBody String json) {
-        Map<String, Object> resultMap = new HashMap<>();
+    public Wrapper receiveApplyEquipment(@RequestBody String json) {
         try {
             JSONObject object = JSON.parseObject(json);
             Integer keyId = object.getInteger("keyId");
@@ -254,8 +242,7 @@ public class UserController {
             Date sysTime = new Date();
 
             if (StringUtils.isEmpty(equipmentType)) {
-                resultMap.put("error", false);
-                resultMap.put("errMsg", "参数错误！");
+                return Wrapper.info(ResponseConstant.ERROR_CODE, "参数错误");
             }
 
             //设备申请表
@@ -277,15 +264,12 @@ public class UserController {
             equipmentInfoMapper.update(equipmentInfo, new QueryWrapper<EquipmentInfo>()
                     .eq("equipmentType", equipmentType));
 
-            resultMap.put("success", true);
-
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            resultMap.put("error", false);
-            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
+            return Wrapper.error();
         }
-        return resultMap;
+        return Wrapper.success();
     }
 
     //endregion
@@ -296,7 +280,7 @@ public class UserController {
      * 设备更换记录
      */
     @RequestMapping(value = "/queryChangeRecords")
-    public Map<String, Object> queryChangeRecords(@RequestBody String json) {
+    public Wrapper queryChangeRecords(@RequestBody String json) {
         Map<String, Object> resultMap = new HashMap<>();
         try {
             JSONObject object = JSON.parseObject(json);
@@ -310,7 +294,7 @@ public class UserController {
             Integer userCode = object.getInteger("userCode");
 
             if (StringUtils.isEmpty(pageSize) || StringUtils.isEmpty(nextPage)) {
-                resultMap.put("errMsg", "参数错误！");
+                return Wrapper.info(ResponseConstant.ERROR_CODE, "参数错误");
             }
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
@@ -324,12 +308,11 @@ public class UserController {
             }
 
             resultMap.put("list", list);
-            resultMap.put("success", true);
 
         } catch (Exception e) {
-            resultMap.put("error", "系统异常！");
+
         }
-        return resultMap;
+        return Wrapper.success(resultMap);
     }
 
     /**
@@ -337,8 +320,7 @@ public class UserController {
      */
     @Transactional
     @RequestMapping(value = "/receiveChangeEquipment")
-    public Map<String, Object> receiveChangeEquipment(@RequestBody String json) {
-        Map<String, Object> resultMap = new HashMap<>();
+    public Wrapper receiveChangeEquipment(@RequestBody String json) {
         try {
             JSONObject object = JSON.parseObject(json);
             Integer keyId = object.getInteger("keyId");
@@ -350,8 +332,7 @@ public class UserController {
             Date sysTime = new Date();
 
             if (StringUtils.isEmpty(equipmentType)) {
-                resultMap.put("error", false);
-                resultMap.put("errMsg", "参数错误！");
+                return Wrapper.info(ResponseConstant.ERROR_CODE, "参数错误");
             }
 
             //设备申请表
@@ -373,37 +354,31 @@ public class UserController {
             equipmentInfoMapper.update(equipmentInfo, new QueryWrapper<EquipmentInfo>()
                     .eq("equipmentType", equipmentType));
 
-            resultMap.put("success", true);
-
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            resultMap.put("error", false);
-            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
+            return Wrapper.error();
         }
-        return resultMap;
+        return Wrapper.success();
     }
 
     //endregion
 
-    //region ************************************************** 个人中心 **************************************************
+    //region ************************************************** 个人信息 **************************************************
 
     /**
      * 修改个人信息
      */
     @Transactional
     @RequestMapping(value = "/editUserInfo")
-    public Map<String, Object> editUserInfo(@RequestBody String json) {
-        Map<String, Object> resultMap = new HashMap<>();
+    public Wrapper editUserInfo(@RequestBody String json) {
         try {
             JSONObject object = JSON.parseObject(json);
+            Integer userCode = object.getInteger("userCode");
             String userName = object.getString("userName");
             String loginName = object.getString("loginName");
             String email = object.getString("email");
             String telephoneNumber = object.getString("telephoneNumber");
-
-            //获取当前登录用户信息
-            Integer userCode = object.getInteger("userCode");
 
             //系统时间
             Date sysTime = new Date();
@@ -421,15 +396,12 @@ public class UserController {
             //员工信息表更新
             userInfoMapper.updateById(userInfo);
 
-            resultMap.put("success", true);
-
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            resultMap.put("error", false);
-            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
+            return Wrapper.error();
         }
-        return resultMap;
+        return Wrapper.success();
     }
 
     /**
@@ -437,8 +409,7 @@ public class UserController {
      */
     @Transactional
     @RequestMapping(value = "/editPassword")
-    public Map<String, Object> editPassword(@RequestBody String json) {
-        Map<String, Object> resultMap = new HashMap<>();
+    public Wrapper editPassword(@RequestBody String json) {
         try {
             JSONObject object = JSON.parseObject(json);
             String srcPass = object.getString("srcPass");
@@ -450,32 +421,28 @@ public class UserController {
             //系统时间
             Date sysTime = new Date();
 
-            //原密码校验
+            //原密码检查
             Long flg = userInfoMapper.selectCount(new QueryWrapper<UserInfo>()
                     .eq("loginPassword", srcPass)
                     .eq("userCode", userCode));
             if (flg == 0) {
-                resultMap.put("error", false);
-                resultMap.put("errMsg", "原密码错误！");
-            } else {
-                //个人信息
-                UserInfo userInfo = new UserInfo();
-                userInfo.setUserCode(userCode);
-                userInfo.setLoginPassword(newPass);
-
-                //员工信息表更新
-                userInfoMapper.updateById(userInfo);
-
-                resultMap.put("success", true);
+                return Wrapper.info(ResponseConstant.ERROR_CODE, "原密码错误");
             }
+
+            //个人信息
+            UserInfo userInfo = new UserInfo();
+            userInfo.setUserCode(userCode);
+            userInfo.setLoginPassword(newPass);
+
+            //员工信息表更新
+            userInfoMapper.updateById(userInfo);
 
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            resultMap.put("error", false);
-            resultMap.put("errMsg", "系统繁忙，请稍后再试！");
+            return Wrapper.error();
         }
-        return resultMap;
+        return Wrapper.success();
     }
 
     //endregion
