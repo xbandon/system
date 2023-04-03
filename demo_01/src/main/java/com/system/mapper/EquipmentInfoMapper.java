@@ -22,7 +22,8 @@ public interface EquipmentInfoMapper extends BaseMapper<EquipmentInfo> {
     IPage<Map<String, Object>> queryEquipmentStock(Page page,
                                                    @Param("equipmentName") String equipmentName);
 
-    List<Map<String, Object>> queryFreeEquipments(@Param("equipmentName") String equipmentName);
+    List<Map<String, Object>> queryFreeEquipments(@Param("equipmentName") String equipmentName,
+                                                  @Param("equipmentStatusCode") Integer equipmentStatusCode);
 
     IPage<Map<String, Object>> queryEquipmentInfos(Page page,
                                                    @Param("equipmentName") String equipmentName,
@@ -32,5 +33,5 @@ public interface EquipmentInfoMapper extends BaseMapper<EquipmentInfo> {
 
     IPage<Map<String, Object>> queryUserEquipments(Page page,
                                                    @Param("equipmentName") String equipmentName,
-                                                   @Param("userCode") Integer userCode);
+                                                   @Param("loginUserCode") Integer loginUserCode);
 }

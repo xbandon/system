@@ -20,23 +20,26 @@ public interface EquipmentChangeInfoMapper extends BaseMapper<EquipmentChangeInf
 
     IPage<Map<String, Object>> queryChangingInfos(Page page,
                                                   @Param("userName") String userName,
-                                                  @Param("equipmentName") String equipmentName);
+                                                  @Param("equipmentName") String equipmentName,
+                                                  @Param("approvalStatusCode") Integer approvalStatusCode);
 
     IPage<Map<String, Object>> queryChangedSucInfos(Page page,
                                                     @Param("applyUser") String applyUser,
                                                     @Param("approvalUser") String approvalUser,
                                                     @Param("equipmentName") String equipmentName,
                                                     @Param("equipmentType") String equipmentType,
-                                                    @Param("receiveStatusCode") Integer receiveStatusCode);
+                                                    @Param("receiveStatusCode") Integer receiveStatusCode,
+                                                    @Param("approvalStatusCode") Integer approvalStatusCode);
 
     IPage<Map<String, Object>> queryChangedErrInfos(Page page,
                                                     @Param("applyUser") String applyUser,
                                                     @Param("approvalUser") String approvalUser,
-                                                    @Param("equipmentName") String equipmentName);
+                                                    @Param("equipmentName") String equipmentName,
+                                                    @Param("approvalStatusCode") Integer approvalStatusCode);
 
     IPage<Map<String, Object>> queryChangeRecords(Page page,
                                                   @Param("equipmentName") String equipmentName,
                                                   @Param("approvalStatusCode") Integer approvalStatusCode,
                                                   @Param("receiveStatusCode") Integer receiveStatusCode,
-                                                  @Param("userCode") Integer userCode);
+                                                  @Param("loginUserCode") Integer loginUserCode);
 }

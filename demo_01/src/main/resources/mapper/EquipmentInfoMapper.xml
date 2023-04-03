@@ -47,11 +47,11 @@
         <if test="equipmentType!='' and equipmentType != null">
             AND e.equipmentType LIKE concat('%',#{equipmentType},'%')
         </if>
-        <if test="equipmentStatusCode!='' and equipmentStatusCode != null">
+        <if test="equipmentStatusCode != null">
             AND e.equipmentStatusCode = #{equipmentStatusCode}
         </if>
         <if test="userName!='' and userName != null">
-            AND u.userName LIKE concat('%',#{userName},'%')
+            AND u1.userName LIKE concat('%',#{userName},'%')
         </if>
         ORDER BY e.updateTime DESC
     </select>
@@ -60,7 +60,7 @@
         SELECT equipmentName,
                equipmentType
         FROM equipment_info
-        WHERE equipmentStatusCode = 0
+        WHERE equipmentStatusCode = #{equipmentStatusCode}
           AND equipmentName = #{equipmentName}
     </select>
 
@@ -72,7 +72,7 @@
         FROM
         equipment_info
         WHERE
-        userCode = #{userCode}
+        userCode = #{loginUserCode}
         <if test="equipmentName!='' and equipmentName != null">
             AND equipmentName LIKE concat('%',#{equipmentName},'%')
         </if>

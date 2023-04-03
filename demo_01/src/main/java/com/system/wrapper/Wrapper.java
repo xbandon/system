@@ -16,17 +16,17 @@ public class Wrapper<T> implements Serializable {
 
     private int code;
     private String msg;
-    private T result;
+    private T data;
 
     public Wrapper(int code, String msg) {
         this.code = code;
         this.msg = msg;
     }
 
-    public Wrapper(int code, String msg, T result) {
+    public Wrapper(int code, String msg, T data) {
         this.code = code;
         this.msg = msg;
-        this.result = result;
+        this.data = data;
     }
 
     /**

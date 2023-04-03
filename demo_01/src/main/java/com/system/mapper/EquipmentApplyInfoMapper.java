@@ -20,24 +20,27 @@ public interface EquipmentApplyInfoMapper extends BaseMapper<EquipmentApplyInfo>
 
     IPage<Map<String, Object>> queryApprovingInfos(Page page,
                                                    @Param("userName") String userName,
-                                                   @Param("equipmentName") String equipmentName);
+                                                   @Param("equipmentName") String equipmentName,
+                                                   @Param("approvalStatusCode") Integer approvalStatusCode);
 
     IPage<Map<String, Object>> queryApprovedSucInfos(Page page,
                                                      @Param("applyUser") String applyUser,
                                                      @Param("approvalUser") String approvalUser,
                                                      @Param("equipmentName") String equipmentName,
                                                      @Param("equipmentType") String equipmentType,
-                                                     @Param("receiveStatusCode") Integer receiveStatusCode);
+                                                     @Param("receiveStatusCode") Integer receiveStatusCode,
+                                                     @Param("approvalStatusCode") Integer approvalStatusCode);
 
     IPage<Map<String, Object>> queryApprovedErrInfos(Page page,
                                                      @Param("applyUser") String applyUser,
                                                      @Param("approvalUser") String approvalUser,
-                                                     @Param("equipmentName") String equipmentName);
+                                                     @Param("equipmentName") String equipmentName,
+                                                     @Param("approvalStatusCode") Integer approvalStatusCode);
 
 
     IPage<Map<String, Object>> queryApplyRecords(Page page,
                                                  @Param("equipmentName") String equipmentName,
                                                  @Param("approvalStatusCode") Integer approvalStatusCode,
                                                  @Param("receiveStatusCode") Integer receiveStatusCode,
-                                                 @Param("userCode") Integer userCode);
+                                                 @Param("loginUserCode") Integer loginUserCode);
 }

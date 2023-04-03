@@ -15,7 +15,7 @@
         equipment_change_info a
         LEFT JOIN user_info u ON a.applyUserCode = u.userCode
         WHERE
-        a.approvalStatusCode = 1
+        a.approvalStatusCode = #{approvalStatusCode}
         <if test="userName!='' and userName != null">
             AND u.userName LIKE concat('%',#{userName},'%')
         </if>
@@ -45,7 +45,7 @@
         LEFT JOIN dictionary_info d ON d.dicTypeCode = 5
         AND a.receiveStatusCode = d.dicCode
         WHERE
-        a.approvalStatusCode = 2
+        a.approvalStatusCode = #{approvalStatusCode}
         <if test="applyUser!='' and applyUser != null">
             AND u1.userName LIKE concat('%',#{applyUser},'%')
         </if>
@@ -80,7 +80,7 @@
         LEFT JOIN user_info u1 ON a.applyUserCode = u1.userCode
         LEFT JOIN user_info u2 ON a.approvalUserCode = u2.userCode
         WHERE
-        a.approvalStatusCode = 3
+        a.approvalStatusCode = #{approvalStatusCode}
         <if test="applyUser!='' and applyUser != null">
             AND u1.userName LIKE concat('%',#{applyUser},'%')
         </if>
@@ -118,7 +118,7 @@
         AND a.receiveStatusCode = d2.dicCode
         LEFT JOIN user_info u ON a.approvalUserCode = u.userCode
         WHERE
-        a.applyUserCode = #{userCode}
+        a.applyUserCode = #{loginUserCode}
         <if test="equipmentName!='' and equipmentName != null">
             AND a.equipmentName LIKE concat('%',#{equipmentName},'%')
         </if>

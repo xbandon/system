@@ -16,7 +16,7 @@
         LEFT JOIN user_info u ON d.updateUser = u.userCode
         WHERE
         1 = 1
-        <if test="dicTypeCode!='' and dicTypeCode != null">
+        <if test="dicTypeCode != null">
             AND d.dicTypeCode = #{dicTypeCode}
         </if>
         <if test="dicValue!='' and dicValue != null">

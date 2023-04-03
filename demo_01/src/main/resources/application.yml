@@ -11,3 +11,6 @@ spring:
 logging:
   level:
     com.system.mapper: debug
+    root: info
+  file:
+    path: logs/

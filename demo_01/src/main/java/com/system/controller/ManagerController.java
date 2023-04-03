@@ -6,10 +6,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.system.constant.CommonConstant;
 import com.system.constant.ResponseConstant;
+import com.system.constant.UserConstant;
 import com.system.entity.*;
 import com.system.mapper.*;
 import com.system.wrapper.Wrapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.StringUtils;
@@ -23,6 +27,8 @@ import java.util.*;
 @RestController
 @RequestMapping("/mg")
 public class ManagerController {
+    private static Logger logger = LogManager.getLogger(ManagerController.class);
+
     @Resource
     EquipmentInfoMapper equipmentInfoMapper;
     @Resource
@@ -67,7 +73,7 @@ public class ManagerController {
             resultMap.put("list", list);
 
         } catch (Exception e) {
-
+            logger.error("系统异常", e);
         }
         return Wrapper.success(resultMap);
     }
@@ -109,7 +115,7 @@ public class ManagerController {
             resultMap.put("list", list);
 
         } catch (Exception e) {
-
+            logger.error("系统异常", e);
         }
         return Wrapper.success(resultMap);
     }
@@ -126,7 +132,7 @@ public class ManagerController {
             String equipmentType = object.getString("equipmentType");
 
             //获取当前登录人员信息
-
+            Integer loginUserCode = object.getInteger("loginUserCode");
 
             //系统时间
             Date sysTime = new Date();
@@ -142,10 +148,10 @@ public class ManagerController {
             EquipmentInfo equipmentInfo = new EquipmentInfo();
             equipmentInfo.setEquipmentName(equipmentName);
             equipmentInfo.setEquipmentType(equipmentType);
-            equipmentInfo.setEquipmentStatusCode(0);
-            //equipmentInfo.setInsertUser();
+            equipmentInfo.setEquipmentStatusCode(CommonConstant.EQUIPMENT_FREE);
+            equipmentInfo.setInsertUser(loginUserCode);
             equipmentInfo.setInsertTime(sysTime);
-            //equipmentInfo.setUpdateUser();
+            equipmentInfo.setUpdateUser(loginUserCode);
             equipmentInfo.setUpdateTime(sysTime);
 
             //设备信息表插入
@@ -154,6 +160,7 @@ public class ManagerController {
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            logger.error("系统异常", e);
             return Wrapper.error();
         }
         return Wrapper.success();
@@ -175,7 +182,7 @@ public class ManagerController {
                 Map map = (Map) o;
                 Integer keyId = (Integer) map.get("keyId");
                 Integer equipmentStatusCode = (Integer) map.get("equipmentStatusCode");
-                if (equipmentStatusCode != 3) {
+                if (!equipmentStatusCode.equals(CommonConstant.EQUIPMENT_SCRAPED)) {
                     idList.clear();
                     return Wrapper.info(ResponseConstant.ERROR_CODE, "仅报废设备可以删除");
                 } else {
@@ -190,10 +197,10 @@ public class ManagerController {
                 }
             }
 
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            logger.error("系统异常", e);
             return Wrapper.error();
         }
         return Wrapper.success();
@@ -221,7 +228,7 @@ public class ManagerController {
             }
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
-            IPage<Map<String, Object>> approvingInfo = equipmentApplyInfoMapper.queryApprovingInfos(page, userName, equipmentName);
+            IPage<Map<String, Object>> approvingInfo = equipmentApplyInfoMapper.queryApprovingInfos(page, userName, equipmentName, CommonConstant.APPLICATION_APPROVING);
             List<Map<String, Object>> list = approvingInfo.getRecords();
 
             if (!list.isEmpty()) {
@@ -233,7 +240,7 @@ public class ManagerController {
             resultMap.put("list", list);
 
         } catch (Exception e) {
-
+            logger.error("系统异常", e);
         }
         return Wrapper.success(resultMap);
     }
@@ -260,7 +267,7 @@ public class ManagerController {
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
             IPage<Map<String, Object>> approvedSucInfo = equipmentApplyInfoMapper.queryApprovedSucInfos(page, applyUser, approvalUser,
-                    equipmentName, equipmentType, receiveStatusCode);
+                    equipmentName, equipmentType, receiveStatusCode, CommonConstant.APPLICATION_APPROVED_SUCCESS);
             List<Map<String, Object>> list = approvedSucInfo.getRecords();
 
             if (!list.isEmpty()) {
@@ -272,7 +279,7 @@ public class ManagerController {
             resultMap.put("list", list);
 
         } catch (Exception e) {
-
+            logger.error("系统异常", e);
         }
         return Wrapper.success(resultMap);
     }
@@ -297,7 +304,7 @@ public class ManagerController {
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
             IPage<Map<String, Object>> approvedErrInfo = equipmentApplyInfoMapper.queryApprovedErrInfos(page, applyUser, approvalUser,
-                    equipmentName);
+                    equipmentName, CommonConstant.APPLICATION_APPROVED_ERROR);
             List<Map<String, Object>> list = approvedErrInfo.getRecords();
 
             if (!list.isEmpty()) {
@@ -309,7 +316,7 @@ public class ManagerController {
             resultMap.put("list", list);
 
         } catch (Exception e) {
-
+            logger.error("系统异常", e);
         }
         return Wrapper.success(resultMap);
     }
@@ -336,8 +343,7 @@ public class ManagerController {
             }
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
-            IPage<Map<String, Object>> changingInfo = equipmentChangeInfoMapper.queryChangingInfos(page, userName,
-                    equipmentName);
+            IPage<Map<String, Object>> changingInfo = equipmentChangeInfoMapper.queryChangingInfos(page, userName, equipmentName, CommonConstant.APPLICATION_APPROVING);
             List<Map<String, Object>> list = changingInfo.getRecords();
 
             if (!list.isEmpty()) {
@@ -349,7 +355,7 @@ public class ManagerController {
             resultMap.put("list", list);
 
         } catch (Exception e) {
-
+            logger.error("系统异常", e);
         }
         return Wrapper.success(resultMap);
     }
@@ -376,7 +382,7 @@ public class ManagerController {
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
             IPage<Map<String, Object>> changedSucInfo = equipmentChangeInfoMapper.queryChangedSucInfos(page, applyUser, approvalUser,
-                    equipmentName, equipmentType, receiveStatusCode);
+                    equipmentName, equipmentType, receiveStatusCode, CommonConstant.APPLICATION_APPROVED_SUCCESS);
             List<Map<String, Object>> list = changedSucInfo.getRecords();
 
             if (!list.isEmpty()) {
@@ -388,7 +394,7 @@ public class ManagerController {
             resultMap.put("list", list);
 
         } catch (Exception e) {
-
+            logger.error("系统异常", e);
         }
         return Wrapper.success(resultMap);
     }
@@ -413,7 +419,7 @@ public class ManagerController {
 
             Page<Map<String, Object>> page = new Page<>(nextPage, pageSize);
             IPage<Map<String, Object>> changedErrInfo = equipmentChangeInfoMapper.queryChangedErrInfos(page, applyUser, approvalUser,
-                    equipmentName);
+                    equipmentName, CommonConstant.APPLICATION_APPROVED_ERROR);
             List<Map<String, Object>> list = changedErrInfo.getRecords();
 
             if (!list.isEmpty()) {
@@ -425,7 +431,7 @@ public class ManagerController {
             resultMap.put("list", list);
 
         } catch (Exception e) {
-
+            logger.error("系统异常", e);
         }
         return Wrapper.success(resultMap);
     }
@@ -447,7 +453,7 @@ public class ManagerController {
                 return Wrapper.info(ResponseConstant.ERROR_CODE, "参数错误");
             }
 
-            List<Map<String, Object>> list = equipmentInfoMapper.queryFreeEquipments(equipmentName);
+            List<Map<String, Object>> list = equipmentInfoMapper.queryFreeEquipments(equipmentName, CommonConstant.EQUIPMENT_FREE);
             if (list.size() > 0) {
                 resultMap.put("success", true);
                 resultMap.put("list", list);
@@ -457,7 +463,7 @@ public class ManagerController {
             }
 
         } catch (Exception e) {
-
+            logger.error("系统异常", e);
         }
         return Wrapper.success(resultMap);
     }
@@ -476,7 +482,7 @@ public class ManagerController {
             String approvalLog = object.getString("approvalLog");
 
             //获取当前登录人员信息
-
+            Integer loginUserCode = object.getInteger("loginUserCode");
 
             //系统时间
             Date sysTime = new Date();
@@ -488,18 +494,18 @@ public class ManagerController {
             EquipmentApplyInfo equipmentApplyInfo = new EquipmentApplyInfo();
             equipmentApplyInfo.setKeyId(keyId);
 
-            if (approvalStatusCode == 2) {
+            if (approvalStatusCode.equals(CommonConstant.APPLICATION_APPROVED_SUCCESS)) {
                 //审批通过
                 equipmentApplyInfo.setEquipmentType(equipmentType);
-                equipmentApplyInfo.setApprovalStatusCode(2);
-                //equipmentApplyInfo.setApprovalUserCode();
+                equipmentApplyInfo.setApprovalStatusCode(approvalStatusCode);
+                equipmentApplyInfo.setApprovalUserCode(loginUserCode);
                 equipmentApplyInfo.setApprovalTime(sysTime);
-                equipmentApplyInfo.setReceiveStatusCode(1);
+                equipmentApplyInfo.setReceiveStatusCode(CommonConstant.EQUIPMENT_UNRECEIVED);
 
                 EquipmentInfo equipmentInfo = new EquipmentInfo();
                 equipmentInfo.setEquipmentType(equipmentType);
-                equipmentInfo.setEquipmentStatusCode(1);
-                //equipmentInfo.setUpdateUser();
+                equipmentInfo.setEquipmentStatusCode(CommonConstant.EQUIPMENT_SENDING);
+                equipmentInfo.setUpdateUser(loginUserCode);
                 equipmentInfo.setUpdateTime(sysTime);
 
                 //设备申请表更新
@@ -510,8 +516,8 @@ public class ManagerController {
                         .eq("equipmentType", equipmentType));
             } else {
                 //审批未通过
-                equipmentApplyInfo.setApprovalStatusCode(3);
-                //equipmentApplyInfo.setApprovalUserCode();
+                equipmentApplyInfo.setApprovalStatusCode(approvalStatusCode);
+                equipmentApplyInfo.setApprovalUserCode(loginUserCode);
                 equipmentApplyInfo.setApprovalLog(approvalLog);
                 equipmentApplyInfo.setApprovalTime(sysTime);
 
@@ -522,6 +528,7 @@ public class ManagerController {
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            logger.error("系统异常", e);
             return Wrapper.error();
         }
         return Wrapper.success();
@@ -544,7 +551,7 @@ public class ManagerController {
             String approvalLog = object.getString("approvalLog");
 
             //获取当前登录人员信息
-
+            Integer loginUserCode = object.getInteger("loginUserCode");
 
             //系统时间
             Date sysTime = new Date();
@@ -557,31 +564,31 @@ public class ManagerController {
             EquipmentChangeInfo equipmentChangeInfo = new EquipmentChangeInfo();
             equipmentChangeInfo.setKeyId(keyId);
 
-            if (approvalStatusCode == 2) {
+            if (approvalStatusCode.equals(CommonConstant.APPLICATION_APPROVED_SUCCESS)) {
                 //审批通过
                 equipmentChangeInfo.setEquipmentType(equipmentType);
-                equipmentChangeInfo.setApprovalStatusCode(2);
-                //equipmentChangeInfo.setApprovalUserCode();
+                equipmentChangeInfo.setApprovalStatusCode(approvalStatusCode);
+                equipmentChangeInfo.setApprovalUserCode(loginUserCode);
                 equipmentChangeInfo.setApprovalTime(sysTime);
-                equipmentChangeInfo.setReceiveStatusCode(1);
+                equipmentChangeInfo.setReceiveStatusCode(CommonConstant.EQUIPMENT_UNRECEIVED);
 
                 EquipmentInfo srcEquipmentInfo = new EquipmentInfo();
                 srcEquipmentInfo.setEquipmentType(srcEquipmentType);
-                srcEquipmentInfo.setEquipmentStatusCode(3);
+                srcEquipmentInfo.setEquipmentStatusCode(CommonConstant.EQUIPMENT_SCRAPED);
                 srcEquipmentInfo.setUserCode(null);
-                //equipmentInfo.setUpdateUser();
+                srcEquipmentInfo.setUpdateUser(loginUserCode);
                 srcEquipmentInfo.setUpdateTime(sysTime);
 
                 EquipmentInfo equipmentInfo = new EquipmentInfo();
                 equipmentInfo.setEquipmentType(equipmentType);
-                equipmentInfo.setEquipmentStatusCode(1);
-                //equipmentInfo.setUpdateUser();
+                equipmentInfo.setEquipmentStatusCode(CommonConstant.EQUIPMENT_SENDING);
+                equipmentInfo.setUpdateUser(loginUserCode);
                 equipmentInfo.setUpdateTime(sysTime);
 
                 EquipmentScrapInfo equipmentScrapInfo = new EquipmentScrapInfo();
                 equipmentScrapInfo.setEquipmentName(srcEquipmentName);
                 equipmentScrapInfo.setEquipmentType(srcEquipmentType);
-                //equipmentScrapInfo.setScrapUserCode();
+                equipmentScrapInfo.setScrapUserCode(loginUserCode);
                 equipmentScrapInfo.setScrapTime(sysTime);
                 equipmentScrapInfo.setScrapLog(applyReason);
 
@@ -598,8 +605,8 @@ public class ManagerController {
                 equipmentScrapInfoMapper.insert(equipmentScrapInfo);
             } else {
                 //审批未通过
-                equipmentChangeInfo.setApprovalStatusCode(3);
-                //equipmentChangeInfo.setApprovalUserCode();
+                equipmentChangeInfo.setApprovalStatusCode(approvalStatusCode);
+                equipmentChangeInfo.setApprovalUserCode(loginUserCode);
                 equipmentChangeInfo.setApprovalLog(approvalLog);
                 equipmentChangeInfo.setApprovalTime(sysTime);
 
@@ -610,6 +617,7 @@ public class ManagerController {
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            logger.error("系统异常", e);
             return Wrapper.error();
         }
         return Wrapper.success();
@@ -651,7 +659,7 @@ public class ManagerController {
             resultMap.put("list", list);
 
         } catch (Exception e) {
-
+            logger.error("系统异常", e);
         }
         return Wrapper.success(resultMap);
     }
@@ -692,9 +700,9 @@ public class ManagerController {
             resultMap.put("list", list);
 
         } catch (Exception e) {
-
+            logger.error("系统异常", e);
         }
-        return Wrapper.success();
+        return Wrapper.success(resultMap);
     }
 
     /**
@@ -712,7 +720,7 @@ public class ManagerController {
             Integer roleCode = object.getInteger("roleCode");
 
             //获取当前登录人员信息
-
+            Integer loginUserCode = object.getInteger("loginUserCode");
 
             //系统时间
             Date sysTime = new Date();
@@ -728,13 +736,13 @@ public class ManagerController {
             UserInfo user = new UserInfo();
             user.setUserName(userName);
             user.setLoginName(loginName);
-            user.setLoginPassword("123456");
+            user.setLoginPassword(UserConstant.DEFAULT_PASSWORD);
             user.setEmail(email);
             user.setTelephoneNumber(telephoneNumber);
             user.setRoleCode(roleCode);
-            user.setAccountStatusCode(0);
+            user.setAccountStatusCode(UserConstant.ACCOUNT_USABLE);
             user.setEntryTime(sysTime);
-            //user.setUpdateUser();
+            user.setUpdateUser(loginUserCode);
             user.setUpdateTime(sysTime);
 
             //员工信息表插入
@@ -743,6 +751,7 @@ public class ManagerController {
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            logger.error("系统异常", e);
             return Wrapper.error();
         }
         return Wrapper.success();
@@ -764,7 +773,7 @@ public class ManagerController {
                 Map map = (Map) o;
                 Integer userCode = (Integer) map.get("userCode");
                 Integer accountStatusCode = (Integer) map.get("accountStatusCode");
-                if (accountStatusCode != 1) {
+                if (!accountStatusCode.equals(UserConstant.ACCOUNT_UNUSABLE)) {
                     idList.clear();
                     return Wrapper.info(ResponseConstant.ERROR_CODE, "仅离职员工可以删除");
                 } else {
@@ -782,6 +791,7 @@ public class ManagerController {
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            logger.error("系统异常", e);
             return Wrapper.error();
         }
         return Wrapper.success();
@@ -799,7 +809,7 @@ public class ManagerController {
             Integer roleCode = object.getInteger("roleCode");
 
             //获取当前登录人员信息
-
+            Integer loginUserCode = object.getInteger("loginUserCode");
 
             //系统时间
             Date sysTime = new Date();
@@ -808,7 +818,7 @@ public class ManagerController {
             UserInfo user = new UserInfo();
             user.setUserCode(userCode);
             user.setRoleCode(roleCode);
-            //user.setUpdateUser();
+            user.setUpdateUser(loginUserCode);
             user.setUpdateTime(sysTime);
 
             //员工信息表更新
@@ -817,6 +827,7 @@ public class ManagerController {
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            logger.error("系统异常", e);
             return Wrapper.error();
         }
         return Wrapper.success();
@@ -833,7 +844,7 @@ public class ManagerController {
             Integer userCode = object.getInteger("userCode");
 
             //获取当前登录人员信息
-
+            Integer loginUserCode = object.getInteger("loginUserCode");
 
             //系统时间
             Date sysTime = new Date();
@@ -841,9 +852,9 @@ public class ManagerController {
             //员工信息
             UserInfo user = new UserInfo();
             user.setUserCode(userCode);
-            user.setAccountStatusCode(1);
+            user.setAccountStatusCode(UserConstant.ACCOUNT_UNUSABLE);
             user.setQuitTime(sysTime);
-            //user.setUpdateUser();
+            user.setUpdateUser(loginUserCode);
             user.setUpdateTime(sysTime);
 
             //员工信息表更新
@@ -853,6 +864,7 @@ public class ManagerController {
                 Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            logger.error("系统异常", e);
             return Wrapper.error();
         }
         return Wrapper.success();
@@ -869,7 +881,7 @@ public class ManagerController {
             Integer userCode = object.getInteger("userCode");
 
             //获取当前登录人员信息
-
+            Integer loginUserCode = object.getInteger("loginUserCode");
 
             //系统时间
             Date sysTime = new Date();
@@ -877,8 +889,8 @@ public class ManagerController {
             //员工信息
             UserInfo user = new UserInfo();
             user.setUserCode(userCode);
-            user.setLoginPassword("123456");
-            //user.setUpdateUser();
+            user.setLoginPassword(UserConstant.DEFAULT_PASSWORD);
+            user.setUpdateUser(loginUserCode);
             user.setUpdateTime(sysTime);
 
             //员工信息表更新
@@ -888,6 +900,7 @@ public class ManagerController {
                 Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            logger.error("系统异常", e);
             return Wrapper.error();
         }
         return Wrapper.success();
@@ -928,7 +941,7 @@ public class ManagerController {
             resultMap.put("list", list);
 
         } catch (Exception e) {
-
+            logger.error("系统异常", e);
         }
         return Wrapper.success(resultMap);
     }
@@ -945,6 +958,7 @@ public class ManagerController {
             String dicValue = object.getString("dicValue");
 
             //获取当前登录人员信息
+            Integer loginUserCode = object.getInteger("loginUserCode");
 
             //系统时间
             Date sysTime = new Date();
@@ -973,9 +987,9 @@ public class ManagerController {
             dictionaryInfo1.setDicCode(dicCode);
             dictionaryInfo1.setDicValue(dicValue);
             dictionaryInfo1.setDelFlag("0");
-            //dictionaryInfo1.setInsertUser();
+            dictionaryInfo1.setInsertUser(loginUserCode);
             dictionaryInfo1.setInsertTime(sysTime);
-            //dictionaryInfo1.setUpdateUser();
+            dictionaryInfo1.setUpdateUser(loginUserCode);
             dictionaryInfo1.setUpdateTime(sysTime);
 
             //字典表插入
@@ -984,6 +998,7 @@ public class ManagerController {
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            logger.error("系统异常", e);
             return Wrapper.error();
         }
         return Wrapper.success();
@@ -1002,6 +1017,7 @@ public class ManagerController {
             String dicValue = object.getString("dicValue");
 
             //获取当前登录人员信息
+            Integer loginUserCode = object.getInteger("loginUserCode");
 
             //系统时间
             Date sysTime = new Date();
@@ -1018,7 +1034,7 @@ public class ManagerController {
             DictionaryInfo dictionaryInfo = new DictionaryInfo();
             dictionaryInfo.setKeyId(keyId);
             dictionaryInfo.setDicValue(dicValue);
-//            dictionaryInfo.setUpdateUser();
+            dictionaryInfo.setUpdateUser(loginUserCode);
             dictionaryInfo.setUpdateTime(sysTime);
 
             //字典表更新
@@ -1027,6 +1043,7 @@ public class ManagerController {
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            logger.error("系统异常", e);
             return Wrapper.error();
         }
         return Wrapper.success();
@@ -1044,6 +1061,7 @@ public class ManagerController {
             String delFlag = object.getString("delFlag");
 
             //获取当前登录人员信息
+            Integer loginUserCode = object.getInteger("loginUserCode");
 
             //系统时间
             Date sysTime = new Date();
@@ -1052,7 +1070,7 @@ public class ManagerController {
                 DictionaryInfo dictionaryInfo = new DictionaryInfo();
                 dictionaryInfo.setKeyId(keyId);
                 dictionaryInfo.setDelFlag(delFlag);
-//                dictionaryInfo.setUpdateUser();
+                dictionaryInfo.setUpdateUser(loginUserCode);
                 dictionaryInfo.setUpdateTime(sysTime);
 
                 //字典表更新
@@ -1064,6 +1082,7 @@ public class ManagerController {
         } catch (Exception e) {
             //事务手动回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            logger.error("系统异常", e);
             return Wrapper.error();
         }
         return Wrapper.success();
