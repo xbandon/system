@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.system.constant.CommonConstant;
 import com.system.constant.ResponseConstant;
-import com.system.entity.EquipmentApplyInfo;
-import com.system.entity.EquipmentChangeInfo;
-import com.system.entity.EquipmentInfo;
-import com.system.entity.UserInfo;
+import com.system.entity.*;
 import com.system.mapper.EquipmentApplyInfoMapper;
 import com.system.mapper.EquipmentChangeInfoMapper;
 import com.system.mapper.EquipmentInfoMapper;
@@ -34,7 +31,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    private static Logger logger = LogManager.getLogger(ManagerController.class);
+    private static Logger logger = LogManager.getLogger(UserController.class);
 
     @Resource
     EquipmentInfoMapper equipmentInfoMapper;
@@ -382,16 +379,15 @@ public class UserController {
      */
     @Transactional
     @RequestMapping(value = "/editUserInfo")
-    public Wrapper editUserInfo(@RequestBody String json) {
+    public Wrapper editUserInfo(@RequestBody LoginUserInfo loginUserInfo) {
         try {
-            JSONObject object = JSON.parseObject(json);
-            String userName = object.getString("userName");
-            String loginName = object.getString("loginName");
-            String email = object.getString("email");
-            String telephoneNumber = object.getString("telephoneNumber");
+            String userName = loginUserInfo.getUserName();
+            String loginName = loginUserInfo.getLoginName();
+            String email = loginUserInfo.getEmail();
+            String telephoneNumber = loginUserInfo.getTelephoneNumber();
 
             //获取当前登录用户信息
-            Integer loginUserCode = object.getInteger("loginUserCode");
+            Integer loginUserCode = loginUserInfo.getUserCode();
 
             //系统时间
             Date sysTime = new Date();
@@ -447,6 +443,8 @@ public class UserController {
             UserInfo userInfo = new UserInfo();
             userInfo.setUserCode(loginUserCode);
             userInfo.setLoginPassword(newPass);
+            userInfo.setUpdateUser(loginUserCode);
+            userInfo.setUpdateTime(sysTime);
 
             //员工信息表更新
             userInfoMapper.updateById(userInfo);

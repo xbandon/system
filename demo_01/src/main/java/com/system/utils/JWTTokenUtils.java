@@ -6,8 +6,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 
 import java.util.Date;
 
-public class JwtTokenUtils {
-    private JwtTokenUtils() {
+public class JWTTokenUtils {
+    private JWTTokenUtils() {
         throw new IllegalStateException("Utility class");
     }
 
