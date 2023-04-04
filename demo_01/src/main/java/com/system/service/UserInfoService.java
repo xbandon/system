@@ -1,8 +1,7 @@
 package com.system.service;
 
-import com.system.entity.LoginUserInfo;
-import com.system.entity.UserInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.system.entity.UserInfo;
 
 /**
  * <p>
@@ -13,7 +12,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2023-02-10
  */
 public interface UserInfoService extends IService<UserInfo> {
-
-    LoginUserInfo login(LoginUserInfo loginUserInfo);
 
 }
