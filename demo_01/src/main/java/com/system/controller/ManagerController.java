@@ -487,7 +487,7 @@ public class ManagerController {
             //系统时间
             Date sysTime = new Date();
 
-            if (StringUtils.isEmpty(keyId) || StringUtils.isEmpty(equipmentType) || StringUtils.isEmpty(approvalStatusCode)) {
+            if (StringUtils.isEmpty(keyId) || StringUtils.isEmpty(approvalStatusCode)) {
                 return Wrapper.info(ResponseConstant.ERROR_CODE, "参数错误");
             }
 
@@ -557,7 +557,7 @@ public class ManagerController {
             Date sysTime = new Date();
 
             if (StringUtils.isEmpty(keyId) || StringUtils.isEmpty(srcEquipmentName) || StringUtils.isEmpty(srcEquipmentType) ||
-                    StringUtils.isEmpty(equipmentType) || StringUtils.isEmpty(applyReason) || StringUtils.isEmpty(approvalStatusCode)) {
+                    StringUtils.isEmpty(applyReason) || StringUtils.isEmpty(approvalStatusCode)) {
                 return Wrapper.info(ResponseConstant.ERROR_CODE, "参数错误");
             }
 
